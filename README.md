@@ -102,16 +102,11 @@ a rename that couldn't be shown (for example, Chrome's PDF viewer).
 ```sh
 npm run dev          # launches Chrome with the extension and reloads on change
 npm run typecheck
-npm test             # Vitest unit tests (fake browser APIs)
-npm run test:e2e     # builds, then runs Playwright against the real extension
 npm run zip          # .output/tab-renamer-<version>-chrome.zip
 node scripts/generate-icons.ts   # regenerate public/icon/*.png
 ```
 
-E2E tests use Playwright's bundled Chromium; branded Chrome no longer accepts `--load-extension`.
-Install it once with `npx playwright install chromium`. The fixture pages in `tests/fixtures` include:
-- an SPA that rewrites its title every 100 ms in three different ways;
-- a page whose body is held back for 1.5 s, used to catch load-time flicker.
+The automated tests (Vitest unit tests and Playwright end-to-end tests) live on the local `tests` branch.
 
 ## Known limitations
 
