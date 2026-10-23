@@ -1,9 +1,9 @@
 {
-  "extends": "./.wxt/tsconfig.json",
-  "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": false,
-    "allowImportingTsExtensions": true
-  },
-  "include": [".wxt/wxt.d.ts", "entrypoints", "lib", "scripts", "*.config.ts"]
+	"extends": "./.wxt/tsconfig.json",
+	"compilerOptions": {
+		"strict": true,
+		"noUncheckedIndexedAccess": false,
+		"allowImportingTsExtensions": true
+	},
+	"include": [".wxt/wxt.d.ts", "entrypoints", "lib", "scripts", "*.config.ts"]
 }

@@ -1,20 +1,24 @@
 {
-  "name": "tab-renamer",
-  "description": "Persistently rename browser tabs by exact URL.",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "wxt",
-    "build": "wxt build",
-    "zip": "wxt zip",
-    "postinstall": "wxt prepare",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@types/node": "^26.6.5",
-    "typescript": "^7.0.2",
-    "web-ext": "^10.8.0",
-    "wxt": "^0.21.4"
-  }
+	"name": "tab-renamer",
+	"description": "Persistently rename browser tabs by exact URL or URL prefix.",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "wxt",
+		"build": "wxt build",
+		"zip": "wxt zip",
+		"postinstall": "wxt prepare",
+		"typecheck": "tsc --noEmit",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.5",
+		"prettier": "^3.9.10",
+		"sass": "^1.106.1",
+		"typescript": "^7.0.2",
+		"web-ext": "^10.8.0",
+		"wxt": "^0.21.4"
+	}
 }

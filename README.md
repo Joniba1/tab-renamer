@@ -1,6 +1,6 @@
 # Tab Renamer
 
-A Chrome extension (Manifest V3) that persistently renames browser tabs by **exact URL**.
+A Chrome extension (Manifest V3) that persistently renames browser tabs by **exact URL** or **URL prefix**.
 Custom titles survive reloads, closing and reopening a tab (`Ctrl+Shift+T`), session restore and full
 browser restarts. They also hold up against single-page apps that keep rewriting `document.title`.
 

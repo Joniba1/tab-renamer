@@ -1,0 +1,144 @@
+@use '../../assets/theme';
+
+:root {
+	@include theme.colors;
+	font: 13px/1.4 theme.$font-sans;
+}
+
+body {
+	margin: 0;
+	width: 340px;
+	background: var(--bg);
+	color: var(--fg);
+}
+
+main {
+	padding: 14px 16px 12px;
+}
+
+h1 {
+	margin: 0 0 8px;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+fieldset {
+	margin: 12px 0 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}
+
+legend {
+	margin-bottom: 4px;
+	padding: 0;
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.scope {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	padding: 4px 0;
+	cursor: pointer;
+
+	&[hidden] {
+		display: none;
+	}
+
+	> input[type='radio'] {
+		margin: 2px 0 0;
+		accent-color: var(--accent);
+	}
+
+	> span {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+.url {
+	display: block;
+	color: var(--muted);
+	font-family: theme.$font-mono;
+	font-size: 11px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#pattern {
+	margin-top: 4px;
+	padding: 4px 7px;
+	font-family: theme.$font-mono;
+	font-size: 12px;
+}
+
+.source {
+	margin: 8px 0 0;
+	color: var(--muted);
+	font-size: 11px;
+}
+
+.error {
+	@include theme.error;
+}
+
+input[type='text'] {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 7px 9px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+
+	&:focus {
+		@include theme.focus-ring;
+	}
+}
+
+.actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+button {
+	@include theme.button;
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
+.notice {
+	margin: 10px 0 0;
+	padding: 8px 10px;
+	border-radius: 6px;
+	background: var(--notice-bg);
+}
+
+footer {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 14px;
+	padding-top: 10px;
+	border-top: 1px solid var(--border);
+	font-size: 12px;
+}
+
+a {
+	color: var(--accent);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}

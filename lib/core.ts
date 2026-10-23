@@ -5,48 +5,48 @@
  */
 
 /** Storage key prefix for exact-URL renames: `t:<normalized url>`. */
-export const KEY_PREFIX = 't:';
+export const KEY_PREFIX = 't:'
 /** Storage key prefix for prefix rules: `p:<host><path>` (scheme-less). */
-export const PREFIX_RULE_KEY = 'p:';
-export const MAX_TITLE_LENGTH = 256;
+export const PREFIX_RULE_KEY = 'p:'
+export const MAX_TITLE_LENGTH = 256
 
 /** Pages the content scripts are registered on. */
-export const CONTENT_MATCHES = ['http://*/*', 'https://*/*', 'file:///*'];
+export const CONTENT_MATCHES = ['http://*/*', 'https://*/*', 'file:///*']
 
-const SUPPORTED_PROTOCOLS = new Set(['http:', 'https:', 'file:']);
+const SUPPORTED_PROTOCOLS = new Set(['http:', 'https:', 'file:'])
 
 /** CustomEvent names used to talk between the ISOLATED and MAIN worlds. */
-export const EVT_LOCK = 'tab-renamer:lock';
-export const EVT_UNLOCK = 'tab-renamer:unlock';
-export const EVT_READY = 'tab-renamer:ready';
+export const EVT_LOCK = 'tab-renamer:lock'
+export const EVT_UNLOCK = 'tab-renamer:unlock'
+export const EVT_READY = 'tab-renamer:ready'
 
 /** Marks the <title> element owned by the extension. */
-export const TITLE_ATTR = 'data-tab-renamer';
+export const TITLE_ATTR = 'data-tab-renamer'
 
 /** Rename of one exact URL. */
 export interface Mapping {
-  url: string;
-  title: string;
-  updatedAt: number;
+	url: string
+	title: string
+	updatedAt: number
 }
 
 /** Rename of every page under `<prefix>/*`, e.g. prefix `github.com/user/repo`. */
 export interface PrefixRule {
-  prefix: string;
-  title: string;
-  updatedAt: number;
+	prefix: string
+	title: string
+	updatedAt: number
 }
 
 /** The rename that applies to a page, and where it came from. */
 export interface Resolved {
-  kind: 'exact' | 'prefix';
-  key: string;
-  title: string;
-  /** Human-readable form: the URL, or `host/path/*`. */
-  pattern: string;
+	kind: 'exact' | 'prefix'
+	key: string
+	title: string
+	/** Human-readable form: the URL, or `host/path/*`. */
+	pattern: string
 }
 
-export type ContentMessage = { type: 'ping' } | { type: 'urlChanged' };
+export type ContentMessage = { type: 'ping' } | { type: 'urlChanged' }
 
 /**
  * Canonical form of a URL used as the mapping key: scheme/host/port are
@@ -54,20 +54,20 @@ export type ContentMessage = { type: 'ping' } | { type: 'urlChanged' };
  * #fragment is dropped. Returns null for URLs the extension can't act on.
  */
 export function normalizeUrl(href: string): string | null {
-  let url: URL;
-  try {
-    url = new URL(href);
-  } catch {
-    return null;
-  }
-  if (!SUPPORTED_PROTOCOLS.has(url.protocol)) return null;
-  url.hash = '';
-  return url.href;
+	let url: URL
+	try {
+		url = new URL(href)
+	} catch {
+		return null
+	}
+	if (!SUPPORTED_PROTOCOLS.has(url.protocol)) return null
+	url.hash = ''
+	return url.href
 }
 
 export function storageKey(href: string): string | null {
-  const normalized = normalizeUrl(href);
-  return normalized == null ? null : KEY_PREFIX + normalized;
+	const normalized = normalizeUrl(href)
+	return normalized == null ? null : KEY_PREFIX + normalized
 }
 
 /**
@@ -77,21 +77,21 @@ export function storageKey(href: string): string | null {
  * anywhere but the end, or a query/hash.
  */
 export function normalizePrefix(pattern: string): string | null {
-  let rest = pattern.trim().replace(/^https?:\/\//i, '');
-  if (rest.endsWith('*')) rest = rest.slice(0, -1);
-  if (rest === '' || /[*?#\s]/.test(rest)) return null;
-  let url: URL;
-  try {
-    url = new URL(`https://${rest}`);
-  } catch {
-    return null;
-  }
-  if (url.hostname === '' || url.username !== '' || url.password !== '') return null;
-  return url.host + url.pathname.replace(/\/+$/, '');
+	let rest = pattern.trim().replace(/^https?:\/\//i, '')
+	if (rest.endsWith('*')) rest = rest.slice(0, -1)
+	if (rest === '' || /[*?#\s]/.test(rest)) return null
+	let url: URL
+	try {
+		url = new URL(`https://${rest}`)
+	} catch {
+		return null
+	}
+	if (url.hostname === '' || url.username !== '' || url.password !== '') return null
+	return url.host + url.pathname.replace(/\/+$/, '')
 }
 
 export function formatPrefix(prefix: string): string {
-  return `${prefix}/*`;
+	return `${prefix}/*`
 }
 
 /**
@@ -100,21 +100,21 @@ export function formatPrefix(prefix: string): string {
  * `p:github.com`. Prefix rules only apply to http(s) pages.
  */
 export function prefixKeys(href: string): string[] {
-  let url: URL;
-  try {
-    url = new URL(href);
-  } catch {
-    return [];
-  }
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') return [];
-  let path = url.host;
-  const keys = [PREFIX_RULE_KEY + path];
-  for (const segment of url.pathname.split('/')) {
-    if (segment === '') continue;
-    path += `/${segment}`;
-    keys.push(PREFIX_RULE_KEY + path);
-  }
-  return keys.reverse();
+	let url: URL
+	try {
+		url = new URL(href)
+	} catch {
+		return []
+	}
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return []
+	let path = url.host
+	const keys = [PREFIX_RULE_KEY + path]
+	for (const segment of url.pathname.split('/')) {
+		if (segment === '') continue
+		path += `/${segment}`
+		keys.push(PREFIX_RULE_KEY + path)
+	}
+	return keys.reverse()
 }
 
 /**
@@ -123,22 +123,22 @@ export function prefixKeys(href: string): string[] {
  * them is a single storage call, however many rules exist.
  */
 export function lookupKeys(href: string): string[] {
-  const exact = storageKey(href);
-  return exact == null ? [] : [exact, ...prefixKeys(href)];
+	const exact = storageKey(href)
+	return exact == null ? [] : [exact, ...prefixKeys(href)]
 }
 
 /** Picks the winning rename from the values fetched for `lookupKeys`. */
 export function resolveTitle(keys: string[], items: Record<string, unknown>): Resolved | null {
-  for (const key of keys) {
-    const value = items[key];
-    if (key.startsWith(KEY_PREFIX) && isMapping(value)) {
-      return { kind: 'exact', key, title: value.title, pattern: value.url };
-    }
-    if (key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value)) {
-      return { kind: 'prefix', key, title: value.title, pattern: formatPrefix(value.prefix) };
-    }
-  }
-  return null;
+	for (const key of keys) {
+		const value = items[key]
+		if (key.startsWith(KEY_PREFIX) && isMapping(value)) {
+			return { kind: 'exact', key, title: value.title, pattern: value.url }
+		}
+		if (key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value)) {
+			return { kind: 'prefix', key, title: value.title, pattern: formatPrefix(value.prefix) }
+		}
+	}
+	return null
 }
 
 /**
@@ -147,35 +147,33 @@ export function resolveTitle(keys: string[], items: Record<string, unknown>): Re
  * An undefined URL (no host permission for the tab) counts as restricted.
  */
 export function isRestrictedUrl(href: string | undefined): boolean {
-  if (!href) return true;
-  let url: URL;
-  try {
-    url = new URL(href);
-  } catch {
-    return true;
-  }
-  if (!SUPPORTED_PROTOCOLS.has(url.protocol)) return true;
-  if (url.hostname === 'chromewebstore.google.com') return true;
-  if (url.hostname === 'chrome.google.com' && url.pathname.startsWith('/webstore')) return true;
-  return false;
+	if (!href) return true
+	let url: URL
+	try {
+		url = new URL(href)
+	} catch {
+		return true
+	}
+	if (!SUPPORTED_PROTOCOLS.has(url.protocol)) return true
+	if (url.hostname === 'chromewebstore.google.com') return true
+	if (url.hostname === 'chrome.google.com' && url.pathname.startsWith('/webstore')) return true
+	return false
 }
 
 /** Trims and caps a user-entered title; returns null when nothing is left. */
 export function sanitizeTitle(title: string): string | null {
-  const trimmed = title.replace(/\s+/g, ' ').trim().slice(0, MAX_TITLE_LENGTH).trim();
-  return trimmed.length > 0 ? trimmed : null;
+	const trimmed = title.replace(/\s+/g, ' ').trim().slice(0, MAX_TITLE_LENGTH).trim()
+	return trimmed.length > 0 ? trimmed : null
 }
 
 export function isMapping(value: unknown): value is Mapping {
-  if (typeof value !== 'object' || value == null) return false;
-  const v = value as Record<string, unknown>;
-  return typeof v.url === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number';
+	if (typeof value !== 'object' || value == null) return false
+	const v = value as Record<string, unknown>
+	return typeof v.url === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number'
 }
 
 export function isPrefixRule(value: unknown): value is PrefixRule {
-  if (typeof value !== 'object' || value == null) return false;
-  const v = value as Record<string, unknown>;
-  return (
-    typeof v.prefix === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number'
-  );
+	if (typeof value !== 'object' || value == null) return false
+	const v = value as Record<string, unknown>
+	return typeof v.prefix === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number'
 }
