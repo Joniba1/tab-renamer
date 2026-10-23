@@ -1,13 +1,14 @@
 // Page-level styles only. Component styles live in *.module.scss files.
-@use '../../assets/theme';
+@use '../../assets/chrome';
 
 :root {
-	@include theme.colors;
-	font: 14px/1.45 theme.$font-sans;
+	@include chrome.colors;
 }
 
 body {
+	// On body, not :root: Chrome injects `body { font-size: 75% }` into extension pages.
+	font: 13px/20px chrome.$font-sans;
 	margin: 0;
-	background: var(--bg);
-	color: var(--fg);
+	background: var(--page);
+	color: var(--text);
 }

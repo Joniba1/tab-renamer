@@ -1,0 +1,271 @@
+// Chrome's own settings look, measured from the computed styles of
+// chrome://extensions/shortcuts and chrome://extensions, so the manage page
+// matches the browser pages around it.
+
+$font-sans: system-ui, 'Segoe UI', Tahoma, sans-serif;
+$font-mono: ui-monospace, Consolas, monospace;
+
+/// A small down triangle for <select>, like Chrome's md-select. `$hex` has no `#`.
+@function select-arrow($hex) {
+	@return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0h8L4 4z' fill='%23#{$hex}'/%3E%3C/svg%3E");
+}
+
+$light: (
+	page: #ffffff,
+	card: #ffffff,
+	text: #1f1f1f,
+	text-secondary: #444746,
+	card-title: #5a5a5a,
+	heading: #202124,
+	separator: rgba(0, 0, 0, 0.06),
+	fill: #e1e3e1,
+	outline: #c7c7c7,
+	icon: #1f1f1f,
+	accent: #0b57d0,
+	button-border: #a8c7fa,
+	action-bg: #0b57d0,
+	action-fg: #ffffff,
+	error: #b3261e,
+	select-arrow: select-arrow('444746'),
+);
+
+$dark: (
+	page: #202124,
+	card: #292a2d,
+	text: #e3e3e3,
+	text-secondary: #c4c7c5,
+	card-title: #e3e3e3,
+	heading: #e3e3e3,
+	separator: rgba(255, 255, 255, 0.1),
+	fill: #444746,
+	outline: #757575,
+	icon: #9aa0a6,
+	accent: #a8c7fa,
+	button-border: #047db7,
+	action-bg: #a8c7fa,
+	action-fg: #062e6f,
+	error: #f2b8b5,
+	select-arrow: select-arrow('c4c7c5'),
+);
+
+@mixin custom-properties($tokens) {
+	@each $name, $value in $tokens {
+		--#{$name}: #{$value};
+	}
+}
+
+/// Tokens as CSS custom properties, following the OS light/dark setting.
+@mixin colors {
+	color-scheme: light dark;
+	@include custom-properties($light);
+
+	@media (prefers-color-scheme: dark) {
+		@include custom-properties($dark);
+	}
+}
+
+@mixin focus-ring($offset: 2px) {
+	outline: 2px solid var(--accent);
+	outline-offset: $offset;
+}
+
+@mixin card {
+	border-radius: 8px;
+	background: var(--card);
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.3),
+		0 2px 6px 2px rgba(0, 0, 0, 0.15);
+}
+
+/// Focus ring for fields that fades in. An outline can't animate from `none`,
+/// so it's always drawn, transparent until the field is focused.
+@mixin field-focus {
+	outline: 2px solid transparent;
+	outline-offset: -2px;
+	transition:
+		outline-color 150ms ease,
+		border-color 150ms ease;
+
+	&:focus-visible {
+		outline-color: var(--accent);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+/// Small label above a field, like "Type a shortcut".
+@mixin field-label {
+	font-size: 10px;
+	font-weight: 500;
+	line-height: 10px;
+	color: var(--text-secondary);
+}
+
+/// Grey filled field, like the shortcut input.
+@mixin filled-input {
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 10px;
+	border: 0;
+	border-radius: 8px;
+	background: var(--fill);
+	color: var(--text);
+	font: inherit;
+
+	@include field-focus;
+
+	&::placeholder {
+		color: var(--text-secondary);
+	}
+}
+
+/// Outlined dropdown, like the "Scope" select.
+@mixin select {
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 20px 0 10px;
+	border: 1px solid var(--outline);
+	border-radius: 8px;
+	appearance: none;
+	// A real background color: the native option list takes its colors from
+	// the select, and would otherwise draw our light text on white.
+	background: var(--card) var(--select-arrow) no-repeat right 10px center;
+	color: var(--text);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+	@include field-focus;
+
+	&:hover {
+		border-color: var(--text-secondary);
+	}
+
+	option {
+		background: var(--card);
+		color: var(--text);
+	}
+
+	// Chrome 135+ lets the option list itself be styled: make it look like
+	// Chrome's own menus. Older versions keep the native list above.
+	@supports (appearance: base-select) {
+		&,
+		&::picker(select) {
+			appearance: base-select;
+		}
+
+		// base-select lays the chosen text out at the top; re-center it.
+		& {
+			display: flex;
+			align-items: center;
+		}
+
+		// We draw our own arrow as a background image.
+		&::picker-icon {
+			display: none;
+		}
+
+		&::picker(select) {
+			margin-top: 4px;
+			padding: 4px 0;
+			border: 0;
+			@include card;
+		}
+
+		option {
+			min-height: 32px;
+			padding: 0 16px;
+			font-size: 13px;
+			cursor: pointer;
+
+			&:hover,
+			&:focus-visible {
+				outline: none;
+				background: color-mix(in srgb, var(--text) 8%, var(--card));
+			}
+
+			&:checked {
+				color: var(--accent);
+				font-weight: 500;
+			}
+
+			// Chrome's menus mark the current item by color, not a checkmark.
+			&::checkmark {
+				display: none;
+			}
+		}
+	}
+}
+
+/// Pill button, like "Details" and "Remove" on chrome://extensions.
+@mixin button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	height: 36px;
+	padding: 0 16px;
+	border: 1px solid var(--button-border);
+	border-radius: 100px;
+	background: transparent;
+	color: var(--accent);
+	font: inherit;
+	font-weight: 500;
+	white-space: nowrap;
+	cursor: pointer;
+
+	&:hover {
+		background: color-mix(in srgb, var(--accent) 8%, transparent);
+	}
+
+	&:focus-visible {
+		@include focus-ring;
+	}
+
+	&:disabled {
+		border-color: color-mix(in srgb, var(--text) 12%, transparent);
+		background: transparent;
+		color: color-mix(in srgb, var(--text) 38%, transparent);
+		cursor: default;
+	}
+}
+
+/// Filled pill button for the main action, like "Delete data".
+@mixin action-button {
+	border-color: transparent;
+	background: var(--action-bg);
+	color: var(--action-fg);
+
+	&:hover {
+		background: color-mix(in srgb, var(--action-bg) 90%, var(--action-fg));
+	}
+}
+
+/// Round icon button, like the shortcut page's edit and clear buttons.
+@mixin icon-button {
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--icon);
+	cursor: pointer;
+
+	&:hover {
+		background: color-mix(in srgb, currentColor 10%, transparent);
+	}
+
+	&:focus-visible {
+		@include focus-ring(0);
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: currentColor;
+	}
+}

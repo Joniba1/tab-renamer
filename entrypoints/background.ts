@@ -33,7 +33,7 @@ export default defineBackground(() => {
 	})
 })
 
-async function createMenus(): Promise<void> {
+const createMenus = async (): Promise<void> => {
 	await browser.contextMenus.removeAll()
 	browser.contextMenus.create({
 		id: MENU_RENAME,
@@ -50,7 +50,7 @@ async function createMenus(): Promise<void> {
 }
 
 /** Manifest content scripts don't run in tabs that were open before install. */
-async function injectIntoOpenTabs(): Promise<void> {
+const injectIntoOpenTabs = async (): Promise<void> => {
 	const tabs = await browser.tabs.query({})
 	await Promise.all(
 		tabs
@@ -59,7 +59,7 @@ async function injectIntoOpenTabs(): Promise<void> {
 	)
 }
 
-async function renameTab(tab: Browser.tabs.Tab): Promise<void> {
+const renameTab = async (tab: Browser.tabs.Tab): Promise<void> => {
 	try {
 		await browser.action.openPopup()
 		return
@@ -88,7 +88,7 @@ async function renameTab(tab: Browser.tabs.Tab): Promise<void> {
  * so openPopup only fails when the popup is already open (e.g. the key was
  * pressed twice), and that should not stack a native prompt on top of it.
  */
-async function renameActiveTab(): Promise<void> {
+const renameActiveTab = async (): Promise<void> => {
 	try {
 		await browser.action.openPopup()
 	} catch {
@@ -96,7 +96,7 @@ async function renameActiveTab(): Promise<void> {
 	}
 }
 
-async function resetActiveTab(tab?: Browser.tabs.Tab): Promise<void> {
+const resetActiveTab = async (tab?: Browser.tabs.Tab): Promise<void> => {
 	const target = tab ?? (await browser.tabs.query({ active: true, currentWindow: true }))[0]
 	if (target?.url == null || isRestrictedUrl(target.url)) return
 	await removeEffective(target.url)

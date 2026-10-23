@@ -53,7 +53,7 @@ export type ContentMessage = { type: 'ping' } | { type: 'urlChanged' }
  * normalized by the URL parser, path and query are kept exactly, and the
  * #fragment is dropped. Returns null for URLs the extension can't act on.
  */
-export function normalizeUrl(href: string): string | null {
+export const normalizeUrl = (href: string): string | null => {
 	let url: URL
 	try {
 		url = new URL(href)
@@ -65,7 +65,7 @@ export function normalizeUrl(href: string): string | null {
 	return url.href
 }
 
-export function storageKey(href: string): string | null {
+export const storageKey = (href: string): string | null => {
 	const normalized = normalizeUrl(href)
 	return normalized == null ? null : KEY_PREFIX + normalized
 }
@@ -76,7 +76,7 @@ export function storageKey(href: string): string | null {
  * `github.com/user/repo`. Returns null for invalid input, including `*`
  * anywhere but the end, or a query/hash.
  */
-export function normalizePrefix(pattern: string): string | null {
+export const normalizePrefix = (pattern: string): string | null => {
 	let rest = pattern.trim().replace(/^https?:\/\//i, '')
 	if (rest.endsWith('*')) rest = rest.slice(0, -1)
 	if (rest === '' || /[*?#\s]/.test(rest)) return null
@@ -90,12 +90,12 @@ export function normalizePrefix(pattern: string): string | null {
 	return url.host + url.pathname.replace(/\/+$/, '')
 }
 
-export function formatPrefix(prefix: string): string {
+export const formatPrefix = (prefix: string): string => {
 	return `${prefix}/*`
 }
 
 /** The suggested prefix pattern for a page: `https://github.com/a/b/?x=1` → `github.com/a/b/*`. */
-export function defaultPattern(href: string): string {
+export const defaultPattern = (href: string): string => {
 	const url = new URL(href)
 	return formatPrefix(url.host + url.pathname.replace(/\/+$/, ''))
 }
@@ -104,7 +104,7 @@ export function defaultPattern(href: string): string {
  * Parses a user-typed exact URL, accepting `example.com/page` as shorthand for
  * `https://example.com/page`. Returns the normalized URL, or null.
  */
-export function parseExactUrl(raw: string): string | null {
+export const parseExactUrl = (raw: string): string | null => {
 	const value = raw.trim()
 	const hasScheme = /^[a-z][\w+.-]*:\/\//i.test(value)
 	return normalizeUrl(value) ?? (hasScheme ? null : normalizeUrl(`https://${value}`))
@@ -115,7 +115,7 @@ export function parseExactUrl(raw: string): string | null {
  * `https://github.com/a/b?x` → `p:github.com/a/b`, `p:github.com/a`,
  * `p:github.com`. Prefix rules only apply to http(s) pages.
  */
-export function prefixKeys(href: string): string[] {
+export const prefixKeys = (href: string): string[] => {
 	let url: URL
 	try {
 		url = new URL(href)
@@ -138,13 +138,13 @@ export function prefixKeys(href: string): string[] {
  * the exact URL first, then prefix rules from longest to shortest. Fetching
  * them is a single storage call, however many rules exist.
  */
-export function lookupKeys(href: string): string[] {
+export const lookupKeys = (href: string): string[] => {
 	const exact = storageKey(href)
 	return exact == null ? [] : [exact, ...prefixKeys(href)]
 }
 
 /** Picks the winning rename from the values fetched for `lookupKeys`. */
-export function resolveTitle(keys: string[], items: Record<string, unknown>): Resolved | null {
+export const resolveTitle = (keys: string[], items: Record<string, unknown>): Resolved | null => {
 	for (const key of keys) {
 		const value = items[key]
 		if (key.startsWith(KEY_PREFIX) && isMapping(value)) {
@@ -162,7 +162,7 @@ export function resolveTitle(keys: string[], items: Record<string, unknown>): Re
  * browser-internal schemes, other extensions, and the Chrome Web Store.
  * An undefined URL (no host permission for the tab) counts as restricted.
  */
-export function isRestrictedUrl(href: string | undefined): boolean {
+export const isRestrictedUrl = (href: string | undefined): boolean => {
 	if (!href) return true
 	let url: URL
 	try {
@@ -177,18 +177,18 @@ export function isRestrictedUrl(href: string | undefined): boolean {
 }
 
 /** Trims and caps a user-entered title; returns null when nothing is left. */
-export function sanitizeTitle(title: string): string | null {
+export const sanitizeTitle = (title: string): string | null => {
 	const trimmed = title.replace(/\s+/g, ' ').trim().slice(0, MAX_TITLE_LENGTH).trim()
 	return trimmed.length > 0 ? trimmed : null
 }
 
-export function isMapping(value: unknown): value is Mapping {
+export const isMapping = (value: unknown): value is Mapping => {
 	if (typeof value !== 'object' || value == null) return false
 	const v = value as Record<string, unknown>
 	return typeof v.url === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number'
 }
 
-export function isPrefixRule(value: unknown): value is PrefixRule {
+export const isPrefixRule = (value: unknown): value is PrefixRule => {
 	if (typeof value !== 'object' || value == null) return false
 	const v = value as Record<string, unknown>
 	return typeof v.prefix === 'string' && typeof v.title === 'string' && typeof v.updatedAt === 'number'

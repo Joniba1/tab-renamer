@@ -42,7 +42,7 @@ export default defineContentScript({
 		let observer: MutationObserver | null = null
 		let observedHead: HTMLHeadElement | null = null
 
-		async function load(): Promise<void> {
+		const load = async (): Promise<void> => {
 			const mySeq = ++seq
 			const keys = currentKeys
 			const result = await browser.storage.local.get(keys)
@@ -51,10 +51,11 @@ export default defineContentScript({
 		}
 
 		// Kick off the lookup before any other setup: it is the only thing
-		// between the page and its custom title.
+		// between the page and its custom title. load() only reaches apply() and
+		// the helpers below after its await, by which time they are defined.
 		if (currentKeys.length > 0) void load()
 
-		function apply(next: string | null): void {
+		const apply = (next: string | null): void => {
 			if (next == null) {
 				release()
 				return
@@ -65,7 +66,7 @@ export default defineContentScript({
 			document.dispatchEvent(new CustomEvent(EVT_LOCK))
 		}
 
-		function release(): void {
+		const release = (): void => {
 			const wasLocked = title != null
 			title = null
 			observer?.disconnect()
@@ -78,7 +79,7 @@ export default defineContentScript({
 		}
 
 		/** Idempotent, so reacting to our own mutations can't loop. */
-		function ensureTitle(): void {
+		const ensureTitle = (): void => {
 			if (title == null) return
 			if (titleEl == null) {
 				titleEl = document.createElement('title')
@@ -93,7 +94,7 @@ export default defineContentScript({
 			}
 		}
 
-		function observe(): void {
+		const observe = (): void => {
 			const root = document.documentElement
 			if (root == null || titleEl == null) return
 			if (observer == null) {
@@ -109,14 +110,14 @@ export default defineContentScript({
 			observeHead()
 		}
 
-		function observeHead(): void {
+		const observeHead = (): void => {
 			const head = document.head
 			if (observer == null || head == null || head === observedHead) return
 			observedHead = head
 			observer.observe(head, { childList: true })
 		}
 
-		function onUrlMaybeChanged(): void {
+		const onUrlMaybeChanged = (): void => {
 			const url = normalizeUrl(location.href)
 			if (url === currentUrl) return
 			currentUrl = url

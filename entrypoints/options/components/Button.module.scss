@@ -1,0 +1,10 @@
+@use '../../../assets/chrome';
+
+.button {
+	@include chrome.button;
+}
+
+// After .button, so its colors win.
+.action {
+	@include chrome.action-button;
+}

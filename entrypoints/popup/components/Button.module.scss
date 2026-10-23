@@ -1,0 +1,14 @@
+@use '../../../assets/theme';
+
+.button {
+	@include theme.button;
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
+.primary {
+	@include theme.button-primary;
+}

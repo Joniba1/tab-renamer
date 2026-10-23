@@ -1,0 +1,29 @@
+@use '../../../assets/chrome';
+
+.card {
+	@include chrome.card;
+	padding-bottom: 8px;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	min-height: 53px;
+	padding: 0 20px;
+	border-bottom: 1px solid var(--separator);
+}
+
+.title {
+	margin: 0;
+	color: var(--card-title);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.actions {
+	display: flex;
+	gap: 8px;
+	margin-left: auto;
+}

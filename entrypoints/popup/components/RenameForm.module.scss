@@ -1,0 +1,17 @@
+@use '../../../assets/theme';
+
+.source {
+	margin: 8px 0 0;
+	@include theme.muted;
+	font-size: 11px;
+}
+
+.error {
+	@include theme.error;
+}
+
+.actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}

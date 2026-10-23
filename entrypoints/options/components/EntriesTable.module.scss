@@ -1,0 +1,91 @@
+@use '../../../assets/chrome';
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	// Fixed layout, so long URLs wrap instead of widening the card.
+	table-layout: fixed;
+
+	th {
+		@include chrome.field-label;
+		padding: 16px 8px 8px;
+		text-align: left;
+	}
+
+	td {
+		padding: 8px;
+		border-top: 1px solid var(--separator);
+		vertical-align: middle;
+	}
+
+	th:first-child,
+	td:first-child {
+		padding-left: 20px;
+	}
+
+	th:last-child,
+	td:last-child {
+		padding-right: 12px;
+	}
+}
+
+.appliesCol {
+	width: 42%;
+}
+
+.updatedCol {
+	width: 156px;
+}
+
+.actionCol {
+	width: 52px;
+}
+
+.title {
+	overflow-wrap: anywhere;
+}
+
+.url {
+	font-family: chrome.$font-mono;
+	font-size: 12px;
+	word-break: break-all;
+
+	a {
+		color: var(--accent);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.badge {
+	display: inline-block;
+	padding: 0 8px;
+	border: 1px solid var(--button-border);
+	border-radius: 100px;
+	color: var(--accent);
+	font-family: chrome.$font-sans;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 18px;
+}
+
+.updated {
+	color: var(--text-secondary);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.action {
+	text-align: right;
+}
+
+.visuallyHidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+}

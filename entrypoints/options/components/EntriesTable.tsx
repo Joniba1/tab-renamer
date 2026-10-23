@@ -1,11 +1,18 @@
-import { removeKey, type Entry } from '../../lib/mappings'
+import { removeKey, type Entry } from '../../../lib/mappings'
 import styles from './EntriesTable.module.scss'
+import { IconButton } from './IconButton'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
-export function EntriesTable({ entries }: { entries: Entry[] }) {
+export const EntriesTable = ({ entries }: { entries: Entry[] }) => {
 	return (
 		<table class={styles.table}>
+			<colgroup>
+				<col />
+				<col class={styles.appliesCol} />
+				<col class={styles.updatedCol} />
+				<col class={styles.actionCol} />
+			</colgroup>
 			<thead>
 				<tr>
 					<th>Title</th>
@@ -35,10 +42,12 @@ export function EntriesTable({ entries }: { entries: Entry[] }) {
 							)}
 						</td>
 						<td class={styles.updated}>{dateFormat.format(entry.updatedAt)}</td>
-						<td>
-							<button class={styles.button} onClick={() => void removeKey(entry.key)}>
-								Remove
-							</button>
+						<td class={styles.action}>
+							<IconButton
+								icon="close"
+								label={`Remove ${entry.title}`}
+								onClick={() => void removeKey(entry.key)}
+							/>
 						</td>
 					</tr>
 				))}

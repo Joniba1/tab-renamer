@@ -5,7 +5,7 @@ import type { ContentMessage } from './core'
 const ISOLATED_SCRIPT = '/content-scripts/title-guard.js'
 const MAIN_SCRIPT = '/content-scripts/title-main.js'
 
-export async function sendToTab(tabId: number, message: ContentMessage): Promise<unknown> {
+export const sendToTab = async (tabId: number, message: ContentMessage): Promise<unknown> => {
 	try {
 		return await browser.tabs.sendMessage(tabId, message)
 	} catch {
@@ -19,7 +19,7 @@ export async function sendToTab(tabId: number, message: ContentMessage): Promise
  * injected. Returns false when Chrome refuses (restricted or file:// without
  * access).
  */
-export async function ensureInjected(tabId: number): Promise<boolean> {
+export const ensureInjected = async (tabId: number): Promise<boolean> => {
 	if ((await sendToTab(tabId, { type: 'ping' })) === true) return true
 	try {
 		await browser.scripting.executeScript({

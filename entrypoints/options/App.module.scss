@@ -1,58 +1,59 @@
-@use '../../assets/theme';
+@use '../../assets/chrome';
 
 .main {
-	max-width: 1000px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	max-width: 50%;
 	margin: 0 auto;
-	padding: 32px 16px;
+	padding: 24px 16px 64px;
 }
 
+.header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.icon {
+	width: 24px;
+	height: 24px;
+}
+
+// Like the "Extensions" page title.
 .heading {
-	margin: 0 0 4px;
+	margin: 0;
+	color: var(--heading);
 	font-size: 22px;
+	font-weight: 500;
+	letter-spacing: 0.25px;
 }
 
 .intro {
-	@include theme.muted;
+	margin: -4px 0 8px;
+	color: var(--text-secondary);
 
 	code {
-		font-family: theme.$font-mono;
-		font-size: 0.9em;
+		font-family: chrome.$font-mono;
+		font-size: 12px;
 	}
 }
 
-.toolbar {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin: 20px 0 12px;
-}
-
 .search {
-	flex: 1 1 240px;
-	padding: 7px 10px;
-	border: 1px solid var(--border);
-	border-radius: 6px;
-	background: transparent;
-	color: inherit;
-	font: inherit;
-}
-
-.button {
-	@include theme.button;
-}
-
-.danger {
-	border-color: var(--danger);
-	color: var(--danger);
+	display: flex;
+	flex-direction: column;
+	padding: 16px 20px 0;
 }
 
 .status {
-	margin: 0 0 12px;
-	@include theme.muted;
+	margin: 8px 20px 0;
+	color: var(--text-secondary);
+	font-size: 12px;
 }
 
 .empty {
-	padding: 24px 0;
-	@include theme.muted;
+	margin: 0;
+	padding: 32px 20px 24px;
+	color: var(--text-secondary);
 	text-align: center;
 }

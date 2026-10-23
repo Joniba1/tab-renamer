@@ -41,11 +41,11 @@ export interface Entry {
 	updatedAt: number
 }
 
-export function isOwnKey(key: string): boolean {
+export const isOwnKey = (key: string): boolean => {
 	return key.startsWith(KEY_PREFIX) || key.startsWith(PREFIX_RULE_KEY)
 }
 
-export async function getMapping(href: string): Promise<Mapping | null> {
+export const getMapping = async (href: string): Promise<Mapping | null> => {
 	const key = storageKey(href)
 	if (key == null) return null
 	const result = await browser.storage.local.get(key)
@@ -54,7 +54,7 @@ export async function getMapping(href: string): Promise<Mapping | null> {
 }
 
 /** The rename currently in effect for a URL: exact first, then longest prefix. */
-export async function resolveForUrl(href: string): Promise<Resolved | null> {
+export const resolveForUrl = async (href: string): Promise<Resolved | null> => {
 	const keys = lookupKeys(href)
 	if (keys.length === 0) return null
 	return resolveTitle(keys, await browser.storage.local.get(keys))
@@ -64,7 +64,7 @@ export async function resolveForUrl(href: string): Promise<Resolved | null> {
  * Saves a custom title for the URL. An empty (after sanitizing) title removes
  * the mapping instead. Returns the stored mapping, or null if none remains.
  */
-export async function setMapping(href: string, title: string): Promise<Mapping | null> {
+export const setMapping = async (href: string, title: string): Promise<Mapping | null> => {
 	const url = normalizeUrl(href)
 	if (url == null) throw new Error(`Unsupported URL: ${href}`)
 	const clean = sanitizeTitle(title)
@@ -81,7 +81,7 @@ export async function setMapping(href: string, title: string): Promise<Mapping |
  * Saves a title for every page under a prefix pattern such as
  * `github.com/user/repo/*`. An empty title removes the rule.
  */
-export async function setPrefixRule(pattern: string, title: string): Promise<PrefixRule | null> {
+export const setPrefixRule = async (pattern: string, title: string): Promise<PrefixRule | null> => {
 	const prefix = normalizePrefix(pattern)
 	if (prefix == null) throw new Error(`Invalid pattern: ${pattern}`)
 	const key = PREFIX_RULE_KEY + prefix
@@ -95,23 +95,23 @@ export async function setPrefixRule(pattern: string, title: string): Promise<Pre
 	return rule
 }
 
-export async function removeMapping(href: string): Promise<void> {
+export const removeMapping = async (href: string): Promise<void> => {
 	const key = storageKey(href)
 	if (key != null) await browser.storage.local.remove(key)
 }
 
-export async function removeKey(key: string): Promise<void> {
+export const removeKey = async (key: string): Promise<void> => {
 	if (isOwnKey(key)) await browser.storage.local.remove(key)
 }
 
 /** Removes whichever rename gives this URL its title (exact or prefix rule). */
-export async function removeEffective(href: string): Promise<Resolved | null> {
+export const removeEffective = async (href: string): Promise<Resolved | null> => {
 	const resolved = await resolveForUrl(href)
 	if (resolved != null) await browser.storage.local.remove(resolved.key)
 	return resolved
 }
 
-export async function listMappings(): Promise<Mapping[]> {
+export const listMappings = async (): Promise<Mapping[]> => {
 	const all = await browser.storage.local.get(null)
 	return Object.entries(all)
 		.filter(([key, value]) => key.startsWith(KEY_PREFIX) && isMapping(value))
@@ -119,7 +119,7 @@ export async function listMappings(): Promise<Mapping[]> {
 		.sort((a, b) => b.updatedAt - a.updatedAt)
 }
 
-export async function listPrefixRules(): Promise<PrefixRule[]> {
+export const listPrefixRules = async (): Promise<PrefixRule[]> => {
 	const all = await browser.storage.local.get(null)
 	return Object.entries(all)
 		.filter(([key, value]) => key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value))
@@ -128,7 +128,7 @@ export async function listPrefixRules(): Promise<PrefixRule[]> {
 }
 
 /** Every stored rename, newest first. */
-export async function listEntries(): Promise<Entry[]> {
+export const listEntries = async (): Promise<Entry[]> => {
 	const all = await browser.storage.local.get(null)
 	const entries: Entry[] = []
 	for (const [key, value] of Object.entries(all)) {
@@ -153,13 +153,13 @@ export async function listEntries(): Promise<Entry[]> {
 	return entries.sort((a, b) => b.updatedAt - a.updatedAt)
 }
 
-export async function clearMappings(): Promise<void> {
+export const clearMappings = async (): Promise<void> => {
 	const all = await browser.storage.local.get(null)
 	const keys = Object.keys(all).filter(isOwnKey)
 	if (keys.length > 0) await browser.storage.local.remove(keys)
 }
 
-export async function exportMappings(): Promise<ExportFile> {
+export const exportMappings = async (): Promise<ExportFile> => {
 	return {
 		version: EXPORT_VERSION,
 		exportedAt: new Date().toISOString(),
@@ -172,7 +172,7 @@ export async function exportMappings(): Promise<ExportFile> {
  * Merges an export file (version 1 or 2) into storage. An incoming entry wins
  * only when it is newer than the stored one; invalid entries are skipped.
  */
-export async function importMappings(data: unknown): Promise<ImportResult> {
+export const importMappings = async (data: unknown): Promise<ImportResult> => {
 	if (typeof data !== 'object' || data == null || !Array.isArray((data as ExportFile).mappings)) {
 		throw new Error('Not a Tab Renamer export file.')
 	}

@@ -1,0 +1,16 @@
+// Shared form control styles; apply with `class={controls.input}` and so on.
+@use '../../../assets/chrome';
+
+.input {
+	@include chrome.filled-input;
+}
+
+// After .input, so the monospace font wins.
+.code {
+	font-family: chrome.$font-mono;
+	font-size: 12px;
+}
+
+.select {
+	@include chrome.select;
+}
