@@ -1,6 +1,6 @@
 import { PREFIX_RULE_KEY, defaultPattern, normalizePrefix, prefixKeys } from '../../../lib/core'
 import { ensureInjected } from '../../../lib/inject'
-import { removeKey, removeMapping, setMapping, setPrefixRule } from '../../../lib/mappings'
+import { removeKey, removeMapping, setMapping, setPrefixRule } from '../../../lib/storage'
 import type { Draft, Page } from '../types'
 
 /** Where a validated draft gets saved. */

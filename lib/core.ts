@@ -71,14 +71,22 @@ export const storageKey = (href: string): string | null => {
 }
 
 /**
+ * `host/path` of a URL, with empty path segments dropped, the same way
+ * `prefixKeys` walks them: `https://github.com/a//b/` → `github.com/a/b`.
+ */
+const hostPath = (url: URL): string => {
+	return url.host + url.pathname.replace(/\/+/g, '/').replace(/\/$/, '')
+}
+
+/**
  * Parses a user-entered prefix pattern such as `github.com/user/repo/*`
  * (scheme optional, trailing `/*` optional) into its canonical form
  * `github.com/user/repo`. Returns null for invalid input, including `*`
- * anywhere but the end, or a query/hash.
+ * anywhere but a trailing `/*`, or a query/hash.
  */
 export const normalizePrefix = (pattern: string): string | null => {
 	let rest = pattern.trim().replace(/^https?:\/\//i, '')
-	if (rest.endsWith('*')) rest = rest.slice(0, -1)
+	if (rest.endsWith('/*')) rest = rest.slice(0, -2)
 	if (rest === '' || /[*?#\s]/.test(rest)) return null
 	let url: URL
 	try {
@@ -87,7 +95,7 @@ export const normalizePrefix = (pattern: string): string | null => {
 		return null
 	}
 	if (url.hostname === '' || url.username !== '' || url.password !== '') return null
-	return url.host + url.pathname.replace(/\/+$/, '')
+	return hostPath(url)
 }
 
 export const formatPrefix = (prefix: string): string => {
@@ -96,8 +104,7 @@ export const formatPrefix = (prefix: string): string => {
 
 /** The suggested prefix pattern for a page: `https://github.com/a/b/?x=1` → `github.com/a/b/*`. */
 export const defaultPattern = (href: string): string => {
-	const url = new URL(href)
-	return formatPrefix(url.host + url.pathname.replace(/\/+$/, ''))
+	return formatPrefix(hostPath(new URL(href)))
 }
 
 /**
@@ -178,7 +185,9 @@ export const isRestrictedUrl = (href: string | undefined): boolean => {
 
 /** Trims and caps a user-entered title; returns null when nothing is left. */
 export const sanitizeTitle = (title: string): string | null => {
-	const trimmed = title.replace(/\s+/g, ' ').trim().slice(0, MAX_TITLE_LENGTH).trim()
+	const capped = title.replace(/\s+/g, ' ').trim().slice(0, MAX_TITLE_LENGTH)
+	// Drop half an emoji (a lone high surrogate) left by the cut.
+	const trimmed = capped.replace(/[\uD800-\uDBFF]$/, '').trim()
 	return trimmed.length > 0 ? trimmed : null
 }
 

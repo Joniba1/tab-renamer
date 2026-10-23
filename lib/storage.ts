@@ -16,9 +16,9 @@ import {
 	type Resolved,
 } from './core'
 
-export const EXPORT_VERSION = 2
+const EXPORT_VERSION = 2
 
-export interface ExportFile {
+interface ExportFile {
 	version: number
 	exportedAt: string
 	mappings: Mapping[]
@@ -45,12 +45,25 @@ export const isOwnKey = (key: string): boolean => {
 	return key.startsWith(KEY_PREFIX) || key.startsWith(PREFIX_RULE_KEY)
 }
 
-export const getMapping = async (href: string): Promise<Mapping | null> => {
-	const key = storageKey(href)
-	if (key == null) return null
-	const result = await browser.storage.local.get(key)
-	const value = result[key]
-	return isMapping(value) ? value : null
+interface Stored<T> {
+	key: string
+	value: T
+}
+
+const newestFirst = (a: Stored<{ updatedAt: number }>, b: Stored<{ updatedAt: number }>): number => {
+	return b.value.updatedAt - a.value.updatedAt
+}
+
+/** Every stored rename in one storage read, each kind newest first. */
+const readAll = async (): Promise<{ mappings: Stored<Mapping>[]; prefixRules: Stored<PrefixRule>[] }> => {
+	const all = await browser.storage.local.get(null)
+	const mappings: Stored<Mapping>[] = []
+	const prefixRules: Stored<PrefixRule>[] = []
+	for (const [key, value] of Object.entries(all)) {
+		if (key.startsWith(KEY_PREFIX) && isMapping(value)) mappings.push({ key, value })
+		else if (key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value)) prefixRules.push({ key, value })
+	}
+	return { mappings: mappings.sort(newestFirst), prefixRules: prefixRules.sort(newestFirst) }
 }
 
 /** The rename currently in effect for a URL: exact first, then longest prefix. */
@@ -111,68 +124,51 @@ export const removeEffective = async (href: string): Promise<Resolved | null> =>
 	return resolved
 }
 
-export const listMappings = async (): Promise<Mapping[]> => {
-	const all = await browser.storage.local.get(null)
-	return Object.entries(all)
-		.filter(([key, value]) => key.startsWith(KEY_PREFIX) && isMapping(value))
-		.map(([, value]) => value as Mapping)
-		.sort((a, b) => b.updatedAt - a.updatedAt)
-}
-
-export const listPrefixRules = async (): Promise<PrefixRule[]> => {
-	const all = await browser.storage.local.get(null)
-	return Object.entries(all)
-		.filter(([key, value]) => key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value))
-		.map(([, value]) => value as PrefixRule)
-		.sort((a, b) => b.updatedAt - a.updatedAt)
-}
-
 /** Every stored rename, newest first. */
 export const listEntries = async (): Promise<Entry[]> => {
-	const all = await browser.storage.local.get(null)
-	const entries: Entry[] = []
-	for (const [key, value] of Object.entries(all)) {
-		if (key.startsWith(KEY_PREFIX) && isMapping(value)) {
-			entries.push({
-				key,
-				kind: 'exact',
-				pattern: value.url,
-				title: value.title,
-				updatedAt: value.updatedAt,
-			})
-		} else if (key.startsWith(PREFIX_RULE_KEY) && isPrefixRule(value)) {
-			entries.push({
-				key,
-				kind: 'prefix',
-				pattern: formatPrefix(value.prefix),
-				title: value.title,
-				updatedAt: value.updatedAt,
-			})
-		}
-	}
+	const { mappings, prefixRules } = await readAll()
+	const entries: Entry[] = [
+		...mappings.map(({ key, value }): Entry => ({
+			key,
+			kind: 'exact',
+			pattern: value.url,
+			title: value.title,
+			updatedAt: value.updatedAt,
+		})),
+		...prefixRules.map(({ key, value }): Entry => ({
+			key,
+			kind: 'prefix',
+			pattern: formatPrefix(value.prefix),
+			title: value.title,
+			updatedAt: value.updatedAt,
+		})),
+	]
 	return entries.sort((a, b) => b.updatedAt - a.updatedAt)
 }
 
-export const clearMappings = async (): Promise<void> => {
+export const clearRenames = async (): Promise<void> => {
 	const all = await browser.storage.local.get(null)
 	const keys = Object.keys(all).filter(isOwnKey)
 	if (keys.length > 0) await browser.storage.local.remove(keys)
 }
 
-export const exportMappings = async (): Promise<ExportFile> => {
+export const exportRenames = async (): Promise<ExportFile> => {
+	const { mappings, prefixRules } = await readAll()
 	return {
 		version: EXPORT_VERSION,
 		exportedAt: new Date().toISOString(),
-		mappings: await listMappings(),
-		prefixRules: await listPrefixRules(),
+		mappings: mappings.map((m) => m.value),
+		prefixRules: prefixRules.map((r) => r.value),
 	}
 }
 
 /**
  * Merges an export file (version 1 or 2) into storage. An incoming entry wins
  * only when it is newer than the stored one; invalid entries are skipped.
+ * Timestamps in the future count as now, so a bad file can't pin an entry
+ * against every later change.
  */
-export const importMappings = async (data: unknown): Promise<ImportResult> => {
+export const importRenames = async (data: unknown): Promise<ImportResult> => {
 	if (typeof data !== 'object' || data == null || !Array.isArray((data as ExportFile).mappings)) {
 		throw new Error('Not a Tab Renamer export file.')
 	}
@@ -180,8 +176,16 @@ export const importMappings = async (data: unknown): Promise<ImportResult> => {
 	const result: ImportResult = { added: 0, updated: 0, skipped: 0 }
 	const existing = await browser.storage.local.get(null)
 	const updates: Record<string, Mapping | PrefixRule> = {}
+	const now = Date.now()
 
 	const merge = (key: string, entry: Mapping | PrefixRule): void => {
+		const pending = updates[key]
+		if (pending != null) {
+			// The file lists this key twice: keep the newer one, count the other as skipped.
+			result.skipped++
+			if (entry.updatedAt > pending.updatedAt) updates[key] = entry
+			return
+		}
 		const current = existing[key] as { updatedAt?: unknown } | undefined
 		const currentTime = typeof current?.updatedAt === 'number' ? current.updatedAt : null
 		if (currentTime != null && currentTime >= entry.updatedAt) {
@@ -193,23 +197,24 @@ export const importMappings = async (data: unknown): Promise<ImportResult> => {
 		else result.added++
 	}
 
+	const timestamp = (value: number): number | null => {
+		return Number.isFinite(value) ? Math.min(value, now) : null
+	}
+
 	for (const entry of file.mappings) {
 		const url = isMapping(entry) ? normalizeUrl(entry.url) : null
 		const title = isMapping(entry) ? sanitizeTitle(entry.title) : null
-		if (url == null || title == null) result.skipped++
-		else merge(KEY_PREFIX + url, { url, title, updatedAt: entry.updatedAt })
+		const updatedAt = isMapping(entry) ? timestamp(entry.updatedAt) : null
+		if (url == null || title == null || updatedAt == null) result.skipped++
+		else merge(KEY_PREFIX + url, { url, title, updatedAt })
 	}
 
 	for (const entry of Array.isArray(file.prefixRules) ? file.prefixRules : []) {
 		const prefix = isPrefixRule(entry) ? normalizePrefix(entry.prefix) : null
 		const title = isPrefixRule(entry) ? sanitizeTitle(entry.title) : null
-		if (prefix == null || title == null) result.skipped++
-		else
-			merge(PREFIX_RULE_KEY + prefix, {
-				prefix,
-				title,
-				updatedAt: entry.updatedAt,
-			})
+		const updatedAt = isPrefixRule(entry) ? timestamp(entry.updatedAt) : null
+		if (prefix == null || title == null || updatedAt == null) result.skipped++
+		else merge(PREFIX_RULE_KEY + prefix, { prefix, title, updatedAt })
 	}
 
 	if (Object.keys(updates).length > 0) await browser.storage.local.set(updates)

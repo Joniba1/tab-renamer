@@ -14,7 +14,7 @@ import { Button } from '../../../components/Button'
 import { Field } from '../../../components/Field'
 import { Select } from '../../../components/Select'
 import { TextInput } from '../../../components/TextInput'
-import { setMapping, setPrefixRule, type Entry } from '../../../lib/mappings'
+import { setMapping, setPrefixRule, type Entry } from '../../../lib/storage'
 import styles from './AddForm.module.scss'
 
 type Kind = 'exact' | 'prefix'

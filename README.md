@@ -72,7 +72,7 @@ script computes every candidate key itself (`t:<exact url>`, `p:github.com/a/b`,
 | File | Role |
 |---|---|
 | [`lib/core.ts`](lib/core.ts) | URL normalization, restricted-page detection, shared constants. Has no dependencies, because it is bundled into the document_start script. |
-| [`lib/mappings.ts`](lib/mappings.ts) | `chrome.storage.local` CRUD and import/export. One key per rename: `"t:<url>" → { url, title, updatedAt }` for exact renames, `"p:<host/path>" → { prefix, title, updatedAt }` for prefix rules. |
+| [`lib/storage.ts`](lib/storage.ts) | `chrome.storage.local` CRUD and import/export. One key per rename: `"t:<url>" → { url, title, updatedAt }` for exact renames, `"p:<host/path>" → { prefix, title, updatedAt }` for prefix rules. |
 | [`entrypoints/title-guard.content.ts`](entrypoints/title-guard.content.ts) | ISOLATED world, `document_start`. Issues the storage lookup first, then takes ownership of the title (details below). |
 | [`entrypoints/title-main.content.ts`](entrypoints/title-main.content.ts) | MAIN world, `document_start`. Wraps the `document.title` setter. While locked, page writes are dropped and the last one is remembered, then replayed on reset so the page's current native title comes back. |
 | [`entrypoints/background.ts`](entrypoints/background.ts) | Context menus, the reset shortcut, SPA URL-change fallback, and injecting into tabs that were open before install or update. |

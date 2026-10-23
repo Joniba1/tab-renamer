@@ -1,9 +1,9 @@
 import { browser } from 'wxt/browser'
 import type { ContentMessage } from './core'
 
-/** Built output paths of the content scripts (see entrypoints/*.content.ts). */
-const ISOLATED_SCRIPT = '/content-scripts/title-guard.js'
-const MAIN_SCRIPT = '/content-scripts/title-main.js'
+/** Built output paths of the content scripts (see entrypoints/*.content.ts). WXT types them, so a typo fails typecheck. */
+const ISOLATED_SCRIPT = '/content-scripts/title-guard.js' as const
+const MAIN_SCRIPT = '/content-scripts/title-main.js' as const
 
 export const sendToTab = async (tabId: number, message: ContentMessage): Promise<unknown> => {
 	try {
@@ -27,12 +27,12 @@ export const ensureInjected = async (tabId: number): Promise<boolean> => {
 			files: [MAIN_SCRIPT],
 			world: 'MAIN',
 			injectImmediately: true,
-		} as Parameters<typeof browser.scripting.executeScript>[0])
+		})
 		await browser.scripting.executeScript({
 			target: { tabId },
 			files: [ISOLATED_SCRIPT],
 			injectImmediately: true,
-		} as Parameters<typeof browser.scripting.executeScript>[0])
+		})
 		return true
 	} catch {
 		return false

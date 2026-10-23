@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import { browser } from 'wxt/browser'
-import { isOwnKey, listEntries, type Entry } from '../../../lib/mappings'
+import { isOwnKey, listEntries, type Entry } from '../../../lib/storage'
 
 /**
  * Every stored rename, kept in sync with storage, so renames made in the

@@ -2,7 +2,7 @@ import { browser, type Browser } from 'wxt/browser'
 import { defineBackground } from 'wxt/utils/define-background'
 import { CONTENT_MATCHES, isRestrictedUrl, sanitizeTitle } from '../lib/core'
 import { ensureInjected, sendToTab } from '../lib/inject'
-import { removeEffective, resolveForUrl, setMapping } from '../lib/mappings'
+import { removeEffective, resolveForUrl, setMapping } from '../lib/storage'
 
 const MENU_RENAME = 'rename-tab'
 const MENU_RESET = 'reset-tab-title'

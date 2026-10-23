@@ -1,4 +1,4 @@
-import { removeKey, type Entry } from '../../../lib/mappings'
+import { removeKey, type Entry } from '../../../lib/storage'
 import styles from './EntriesTable.module.scss'
 import { IconButton } from '../../../components/IconButton'
 

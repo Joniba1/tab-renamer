@@ -1,4 +1,4 @@
-import { clearMappings } from '../../../lib/mappings'
+import { clearRenames } from '../../../lib/storage'
 import { downloadExport, importFile } from '../services/backup'
 import { Button } from '../../../components/Button'
 import { FileButton } from '../../../components/FileButton'
@@ -23,7 +23,7 @@ export const RenameActions = ({ count, onStatus }: Props) => {
 	const clearAll = async (): Promise<void> => {
 		if (count === 0) return
 		if (!confirm(`Remove all ${count} custom tab titles?`)) return
-		await clearMappings()
+		await clearRenames()
 		onStatus('All custom titles removed.')
 	}
 

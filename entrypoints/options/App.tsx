@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks'
-import type { Entry } from '../../lib/mappings'
+import type { Entry } from '../../lib/storage'
 import { Card } from '../../components/Card'
 import { TextInput } from '../../components/TextInput'
 import styles from './App.module.scss'
