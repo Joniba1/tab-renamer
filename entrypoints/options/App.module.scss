@@ -1,0 +1,58 @@
+@use '../../assets/theme';
+
+.main {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 32px 16px;
+}
+
+.heading {
+	margin: 0 0 4px;
+	font-size: 22px;
+}
+
+.intro {
+	@include theme.muted;
+
+	code {
+		font-family: theme.$font-mono;
+		font-size: 0.9em;
+	}
+}
+
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 20px 0 12px;
+}
+
+.search {
+	flex: 1 1 240px;
+	padding: 7px 10px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+}
+
+.button {
+	@include theme.button;
+}
+
+.danger {
+	border-color: var(--danger);
+	color: var(--danger);
+}
+
+.status {
+	margin: 0 0 12px;
+	@include theme.muted;
+}
+
+.empty {
+	padding: 24px 0;
+	@include theme.muted;
+	text-align: center;
+}

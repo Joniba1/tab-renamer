@@ -1,0 +1,67 @@
+@use '../../assets/theme';
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th,
+	td {
+		padding: 8px 10px;
+		border-bottom: 1px solid var(--border);
+		text-align: left;
+		vertical-align: top;
+	}
+
+	th {
+		font-size: 12px;
+		font-weight: 600;
+		@include theme.muted;
+	}
+
+	tbody tr:hover {
+		background: var(--row);
+	}
+}
+
+.title {
+	font-weight: 500;
+	word-break: break-word;
+}
+
+.url {
+	font-family: theme.$font-mono;
+	font-size: 12px;
+	word-break: break-all;
+
+	a {
+		color: var(--accent);
+		text-decoration: none;
+	}
+}
+
+.badge {
+	display: inline-block;
+	padding: 0 6px;
+	border: 1px solid var(--accent);
+	border-radius: 999px;
+	color: var(--accent);
+	font-family: system-ui, sans-serif;
+	font-size: 11px;
+}
+
+.updated {
+	@include theme.muted;
+	white-space: nowrap;
+}
+
+.button {
+	@include theme.button;
+}
+
+.visuallyHidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+}

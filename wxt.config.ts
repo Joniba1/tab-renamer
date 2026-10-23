@@ -1,7 +1,9 @@
+import preact from '@preact/preset-vite'
 import { defineConfig } from 'wxt'
 
 export default defineConfig({
 	imports: false,
+	vite: () => ({ plugins: [preact()] }),
 	manifest: {
 		name: 'Tab Renamer',
 		description: 'Persistently rename browser tabs by exact URL or URL prefix.',

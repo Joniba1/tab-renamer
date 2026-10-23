@@ -1,0 +1,14 @@
+// Page-level styles only. Component styles live in *.module.scss files.
+@use '../../assets/theme';
+
+:root {
+	@include theme.colors;
+	font: 13px/1.4 theme.$font-sans;
+}
+
+body {
+	margin: 0;
+	width: 340px;
+	background: var(--bg);
+	color: var(--fg);
+}

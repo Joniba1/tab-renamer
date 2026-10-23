@@ -4,7 +4,7 @@ A Chrome extension (Manifest V3) that persistently renames browser tabs by **exa
 Custom titles survive reloads, closing and reopening a tab (`Ctrl+Shift+T`), session restore and full
 browser restarts. They also hold up against single-page apps that keep rewriting `document.title`.
 
-Built with [WXT](https://wxt.dev) and TypeScript. It has no runtime dependencies.
+Built with [WXT](https://wxt.dev), TypeScript and SCSS. The popup and the manage page use [Preact](https://preactjs.com) (about 4 KB); the content scripts have no dependencies.
 
 ## Install (unpacked)
 
@@ -76,7 +76,7 @@ script computes every candidate key itself (`t:<exact url>`, `p:github.com/a/b`,
 | [`entrypoints/title-guard.content.ts`](entrypoints/title-guard.content.ts) | ISOLATED world, `document_start`. Issues the storage lookup first, then takes ownership of the title (details below). |
 | [`entrypoints/title-main.content.ts`](entrypoints/title-main.content.ts) | MAIN world, `document_start`. Wraps the `document.title` setter. While locked, page writes are dropped and the last one is remembered, then replayed on reset so the page's current native title comes back. |
 | [`entrypoints/background.ts`](entrypoints/background.ts) | Context menus, the reset shortcut, SPA URL-change fallback, and injecting into tabs that were open before install or update. |
-| [`entrypoints/popup`](entrypoints/popup), [`entrypoints/options`](entrypoints/options) | The UI. |
+| [`entrypoints/popup`](entrypoints/popup), [`entrypoints/options`](entrypoints/options) | The UI, as Preact components: `Popup.tsx`, and the manage page's `App.tsx`, `AddForm.tsx` and `EntriesTable.tsx`. |
 
 How `title-guard.content.ts` owns the title:
 - It inserts its own `<title data-tab-renamer>` as the **first** `<title>` in the document. `document.title` and Chrome's tab strip both read the first one, so the site's `<title>` has no effect.

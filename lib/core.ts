@@ -94,6 +94,22 @@ export function formatPrefix(prefix: string): string {
 	return `${prefix}/*`
 }
 
+/** The suggested prefix pattern for a page: `https://github.com/a/b/?x=1` → `github.com/a/b/*`. */
+export function defaultPattern(href: string): string {
+	const url = new URL(href)
+	return formatPrefix(url.host + url.pathname.replace(/\/+$/, ''))
+}
+
+/**
+ * Parses a user-typed exact URL, accepting `example.com/page` as shorthand for
+ * `https://example.com/page`. Returns the normalized URL, or null.
+ */
+export function parseExactUrl(raw: string): string | null {
+	const value = raw.trim()
+	const hasScheme = /^[a-z][\w+.-]*:\/\//i.test(value)
+	return normalizeUrl(value) ?? (hasScheme ? null : normalizeUrl(`https://${value}`))
+}
+
 /**
  * Every prefix-rule key that could match the URL, longest first: for
  * `https://github.com/a/b?x` → `p:github.com/a/b`, `p:github.com/a`,

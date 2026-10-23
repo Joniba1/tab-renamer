@@ -41,7 +41,7 @@ export interface Entry {
 	updatedAt: number
 }
 
-function isOwnKey(key: string): boolean {
+export function isOwnKey(key: string): boolean {
 	return key.startsWith(KEY_PREFIX) || key.startsWith(PREFIX_RULE_KEY)
 }
 

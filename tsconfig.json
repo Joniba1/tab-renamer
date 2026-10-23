@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"strict": true,
 		"noUncheckedIndexedAccess": false,
-		"allowImportingTsExtensions": true
+		"allowImportingTsExtensions": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
 	},
 	"include": [".wxt/wxt.d.ts", "entrypoints", "lib", "scripts", "*.config.ts"]
 }

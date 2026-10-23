@@ -1,38 +1,49 @@
 @use '../../assets/theme';
 
-:root {
-	@include theme.colors;
-	font: 13px/1.4 theme.$font-sans;
-}
-
-body {
-	margin: 0;
-	width: 340px;
-	background: var(--bg);
-	color: var(--fg);
-}
-
-main {
+.main {
 	padding: 14px 16px 12px;
 }
 
-h1 {
+.heading {
 	margin: 0 0 8px;
 	font-size: 15px;
 	font-weight: 600;
 }
 
-fieldset {
+.input {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 7px 9px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+
+	&:focus {
+		@include theme.focus-ring;
+	}
+}
+
+// After .input so its padding and font win.
+.pattern {
+	margin-top: 4px;
+	padding: 4px 7px;
+	font-family: theme.$font-mono;
+	font-size: 12px;
+}
+
+.fieldset {
 	margin: 12px 0 0;
 	padding: 0;
 	border: 0;
 	min-width: 0;
 }
 
-legend {
+.legend {
 	margin-bottom: 4px;
 	padding: 0;
-	color: var(--muted);
+	@include theme.muted;
 	font-size: 11px;
 	font-weight: 600;
 	text-transform: uppercase;
@@ -46,6 +57,7 @@ legend {
 	padding: 4px 0;
 	cursor: pointer;
 
+	// `display: flex` would otherwise override the hidden attribute.
 	&[hidden] {
 		display: none;
 	}
@@ -63,7 +75,7 @@ legend {
 
 .url {
 	display: block;
-	color: var(--muted);
+	@include theme.muted;
 	font-family: theme.$font-mono;
 	font-size: 11px;
 	white-space: nowrap;
@@ -71,36 +83,14 @@ legend {
 	text-overflow: ellipsis;
 }
 
-#pattern {
-	margin-top: 4px;
-	padding: 4px 7px;
-	font-family: theme.$font-mono;
-	font-size: 12px;
-}
-
 .source {
 	margin: 8px 0 0;
-	color: var(--muted);
+	@include theme.muted;
 	font-size: 11px;
 }
 
 .error {
 	@include theme.error;
-}
-
-input[type='text'] {
-	box-sizing: border-box;
-	width: 100%;
-	padding: 7px 9px;
-	border: 1px solid var(--border);
-	border-radius: 6px;
-	background: transparent;
-	color: inherit;
-	font: inherit;
-
-	&:focus {
-		@include theme.focus-ring;
-	}
 }
 
 .actions {
@@ -109,13 +99,17 @@ input[type='text'] {
 	margin-top: 10px;
 }
 
-button {
+.button {
 	@include theme.button;
 
 	&:disabled {
 		opacity: 0.5;
 		cursor: default;
 	}
+}
+
+.primary {
+	@include theme.button-primary;
 }
 
 .notice {
@@ -125,7 +119,7 @@ button {
 	background: var(--notice-bg);
 }
 
-footer {
+.footer {
 	display: flex;
 	justify-content: space-between;
 	margin-top: 14px;
@@ -134,7 +128,7 @@ footer {
 	font-size: 12px;
 }
 
-a {
+.link {
 	color: var(--accent);
 	text-decoration: none;
 

@@ -53,6 +53,8 @@ $dark: (
 }
 
 @mixin button {
+	display: inline-flex;
+	align-items: center;
 	padding: 6px 12px;
 	border: 1px solid var(--border);
 	border-radius: 6px;
@@ -60,13 +62,18 @@ $dark: (
 	color: inherit;
 	font: inherit;
 	cursor: pointer;
+}
 
-	&.primary {
-		border-color: var(--accent);
-		background: var(--accent);
-		color: var(--accent-fg);
-		font-weight: 600;
-	}
+/// Apply after `button`, on a class declared later in the file.
+@mixin button-primary {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--accent-fg);
+	font-weight: 600;
+}
+
+@mixin muted {
+	color: var(--muted);
 }
 
 @mixin error {

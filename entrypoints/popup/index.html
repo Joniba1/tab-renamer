@@ -4,62 +4,9 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Rename this tab</title>
-		<link rel="stylesheet" href="./style.scss" />
 	</head>
 	<body>
-		<main>
-			<h1>Rename tab</h1>
-
-			<form id="form" hidden>
-				<input
-					id="title"
-					type="text"
-					maxlength="256"
-					autocomplete="off"
-					spellcheck="false"
-					aria-label="Custom tab title"
-				/>
-
-				<fieldset>
-					<legend>Apply to</legend>
-					<label class="scope">
-						<input type="radio" name="scope" value="exact" checked />
-						<span>
-							This page only
-							<span class="url" id="url"></span>
-						</span>
-					</label>
-					<label class="scope" id="prefix-option">
-						<input type="radio" name="scope" value="prefix" />
-						<span>
-							All pages under
-							<input
-								id="pattern"
-								type="text"
-								autocomplete="off"
-								spellcheck="false"
-								aria-label="URL prefix pattern"
-							/>
-						</span>
-					</label>
-				</fieldset>
-
-				<p class="source" id="source" hidden></p>
-				<p class="error" id="error" role="alert" hidden></p>
-
-				<div class="actions">
-					<button type="submit" class="primary" id="save">Save</button>
-					<button type="button" id="reset" disabled>Reset to original</button>
-				</div>
-			</form>
-
-			<p class="notice" id="notice" hidden></p>
-
-			<footer>
-				<a href="#" id="shortcuts">Keyboard shortcuts</a>
-				<a href="#" id="manage">Manage all renames</a>
-			</footer>
-		</main>
-		<script type="module" src="./main.ts"></script>
+		<div id="app"></div>
+		<script type="module" src="./main.tsx"></script>
 	</body>
 </html>
