@@ -1,7 +1,7 @@
 import { clearMappings } from '../../../lib/mappings'
 import { downloadExport, importFile } from '../services/backup'
-import { Button } from './Button'
-import { FileButton } from './FileButton'
+import { Button } from '../../../components/Button'
+import { FileButton } from '../../../components/FileButton'
 
 interface Props {
 	/** How many renames exist, for the clear-all confirmation. */

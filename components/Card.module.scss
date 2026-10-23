@@ -1,7 +1,7 @@
-@use '../../../assets/chrome';
+@use '../assets/ui';
 
 .card {
-	@include chrome.card;
+	@include ui.card;
 	padding-bottom: 8px;
 }
 

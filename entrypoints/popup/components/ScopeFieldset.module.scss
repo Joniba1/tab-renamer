@@ -1,26 +1,22 @@
-@use '../../../assets/theme';
+@use '../../../assets/ui';
 
 .fieldset {
-	margin: 12px 0 0;
+	margin: 16px 0 0;
 	padding: 0;
 	border: 0;
 	min-width: 0;
 }
 
 .legend {
-	margin-bottom: 4px;
+	margin-bottom: 6px;
 	padding: 0;
-	@include theme.muted;
-	font-size: 11px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	@include ui.field-label;
 }
 
 .url {
 	display: block;
-	@include theme.muted;
-	font-family: theme.$font-mono;
+	color: var(--text-secondary);
+	font-family: ui.$font-mono;
 	font-size: 11px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -28,5 +24,5 @@
 }
 
 .pattern {
-	margin-top: 4px;
+	margin-top: 6px;
 }

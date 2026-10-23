@@ -1,5 +1,5 @@
 import type { ComponentChildren } from 'preact'
-import { cx } from '../../../lib/cx'
+import { cx } from '../lib/cx'
 import styles from './Field.module.scss'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 	children: ComponentChildren
 }
 
-/** A form control with a small label above it, like "Type a shortcut". */
+/** A form control with a small label above it. */
 export const Field = ({ label, class: className, children }: Props) => {
 	return (
 		<label class={cx(styles.field, className)}>

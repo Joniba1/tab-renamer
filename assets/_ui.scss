@@ -1,11 +1,9 @@
-// Chrome's own settings look, measured from the computed styles of
-// chrome://extensions/shortcuts and chrome://extensions, so the manage page
-// matches the browser pages around it.
+// Design tokens and component mixins, shared by the popup and the manage page.
 
 $font-sans: system-ui, 'Segoe UI', Tahoma, sans-serif;
 $font-mono: ui-monospace, Consolas, monospace;
 
-/// A small down triangle for <select>, like Chrome's md-select. `$hex` has no `#`.
+/// A small down triangle for <select>. `$hex` has no `#`.
 @function select-arrow($hex) {
 	@return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0h8L4 4z' fill='%23#{$hex}'/%3E%3C/svg%3E");
 }
@@ -95,7 +93,7 @@ $dark: (
 	}
 }
 
-/// Small label above a field, like "Type a shortcut".
+/// Small label above a field.
 @mixin field-label {
 	font-size: 10px;
 	font-weight: 500;
@@ -103,7 +101,7 @@ $dark: (
 	color: var(--text-secondary);
 }
 
-/// Grey filled field, like the shortcut input.
+/// Grey filled field.
 @mixin filled-input {
 	box-sizing: border-box;
 	height: 36px;
@@ -121,7 +119,7 @@ $dark: (
 	}
 }
 
-/// Outlined dropdown, like the "Scope" select.
+/// Outlined dropdown.
 @mixin select {
 	box-sizing: border-box;
 	height: 36px;
@@ -147,8 +145,8 @@ $dark: (
 		color: var(--text);
 	}
 
-	// Chrome 135+ lets the option list itself be styled: make it look like
-	// Chrome's own menus. Older versions keep the native list above.
+	// Where supported, style the option list itself as a menu. Elsewhere the
+	// native list is used, with the colors set above.
 	@supports (appearance: base-select) {
 		&,
 		&::picker(select) {
@@ -190,7 +188,7 @@ $dark: (
 				font-weight: 500;
 			}
 
-			// Chrome's menus mark the current item by color, not a checkmark.
+			// The current item is marked by color, not a checkmark.
 			&::checkmark {
 				display: none;
 			}
@@ -198,7 +196,7 @@ $dark: (
 	}
 }
 
-/// Pill button, like "Details" and "Remove" on chrome://extensions.
+/// Outlined pill button.
 @mixin button {
 	display: inline-flex;
 	align-items: center;
@@ -231,7 +229,7 @@ $dark: (
 	}
 }
 
-/// Filled pill button for the main action, like "Delete data".
+/// Filled pill button for the main action.
 @mixin action-button {
 	border-color: transparent;
 	background: var(--action-bg);
@@ -240,9 +238,13 @@ $dark: (
 	&:hover {
 		background: color-mix(in srgb, var(--action-bg) 90%, var(--action-fg));
 	}
+
+	&:disabled {
+		background: color-mix(in srgb, var(--text) 12%, transparent);
+	}
 }
 
-/// Round icon button, like the shortcut page's edit and clear buttons.
+/// Round icon-only button.
 @mixin icon-button {
 	display: inline-grid;
 	place-items: center;

@@ -1,5 +1,5 @@
 import { openManagePage, openShortcutsPage } from '../services/navigation'
-import { ActionLink } from './ActionLink'
+import { ActionLink } from '../../../components/ActionLink'
 import styles from './PopupFooter.module.scss'
 
 export const PopupFooter = () => {

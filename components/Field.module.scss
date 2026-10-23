@@ -1,4 +1,4 @@
-@use '../../../assets/chrome';
+@use '../assets/ui';
 
 .field {
 	display: flex;
@@ -8,5 +8,5 @@
 }
 
 .label {
-	@include chrome.field-label;
+	@include ui.field-label;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks'
 import { MAX_TITLE_LENGTH } from '../../../lib/core'
-import { TextInput } from './TextInput'
+import { TextInput } from '../../../components/TextInput'
 
 interface Props {
 	value: string

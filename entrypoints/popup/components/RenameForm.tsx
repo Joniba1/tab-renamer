@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import { initialDraft, parseDraft, resetRename, saveRename } from '../services/rename'
 import type { Draft, Page } from '../types'
-import { Button } from './Button'
+import { Button } from '../../../components/Button'
 import styles from './RenameForm.module.scss'
 import { ScopeFieldset } from './ScopeFieldset'
 import { TitleField } from './TitleField'
@@ -66,10 +66,10 @@ export const RenameForm = ({ page, onDone, onUnreachable }: Props) => {
 			)}
 
 			<div class={styles.actions}>
-				<Button type="submit" variant="primary" id="save" disabled={saving}>
+				<Button type="submit" variant="action" size="small" id="save" disabled={saving}>
 					Save
 				</Button>
-				<Button type="button" id="reset" disabled={resolved == null} onClick={() => void reset()}>
+				<Button type="button" size="small" id="reset" disabled={resolved == null} onClick={() => void reset()}>
 					{resolved?.kind === 'prefix' ? 'Remove rule' : 'Reset to original'}
 				</Button>
 			</div>

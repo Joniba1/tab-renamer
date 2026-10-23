@@ -1,9 +1,9 @@
 import { useState } from 'preact/hooks'
 import type { Entry } from '../../lib/mappings'
+import { Card } from '../../components/Card'
+import { TextInput } from '../../components/TextInput'
 import styles from './App.module.scss'
 import { AddForm } from './components/AddForm'
-import { Card } from './components/Card'
-import controls from './components/controls.module.scss'
 import { EntriesTable } from './components/EntriesTable'
 import { RenameActions } from './components/RenameActions'
 import { useEntries } from './hooks/useEntries'
@@ -42,9 +42,8 @@ export const App = () => {
 
 			<Card title="Renames" actions={<RenameActions count={all.length} onStatus={setStatus} />}>
 				<div class={styles.search}>
-					<input
+					<TextInput
 						id="search"
-						class={controls.input}
 						type="search"
 						placeholder="Search URL or title…"
 						aria-label="Search renames"

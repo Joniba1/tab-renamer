@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks'
-import { Notice } from './components/Notice'
+import { Notice } from '../../components/Notice'
 import { PopupFooter } from './components/PopupFooter'
 import { RenameForm } from './components/RenameForm'
 import styles from './Popup.module.scss'

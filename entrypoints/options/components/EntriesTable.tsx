@@ -1,6 +1,6 @@
 import { removeKey, type Entry } from '../../../lib/mappings'
 import styles from './EntriesTable.module.scss'
-import { IconButton } from './IconButton'
+import { IconButton } from '../../../components/IconButton'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 

@@ -1,0 +1,5 @@
+@use '../assets/ui';
+
+.button {
+	@include ui.icon-button;
+}

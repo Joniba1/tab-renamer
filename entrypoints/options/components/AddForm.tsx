@@ -10,12 +10,12 @@ import {
 	parseExactUrl,
 	sanitizeTitle,
 } from '../../../lib/core'
-import { cx } from '../../../lib/cx'
+import { Button } from '../../../components/Button'
+import { Field } from '../../../components/Field'
+import { Select } from '../../../components/Select'
+import { TextInput } from '../../../components/TextInput'
 import { setMapping, setPrefixRule, type Entry } from '../../../lib/mappings'
 import styles from './AddForm.module.scss'
-import { Button } from './Button'
-import controls from './controls.module.scss'
-import { Field } from './Field'
 
 type Kind = 'exact' | 'prefix'
 
@@ -93,14 +93,10 @@ export const AddForm = ({ entries, onStatus }: Props) => {
 		<form id="add" class={styles.form} onSubmit={(event) => void submit(event)}>
 			<div class={styles.grid}>
 				<Field label="Custom title">
-					<input
+					<TextInput
 						id="add-title"
-						class={controls.input}
 						ref={titleInput}
-						type="text"
 						maxLength={MAX_TITLE_LENGTH}
-						autocomplete="off"
-						spellcheck={false}
 						placeholder="My project"
 						required
 						value={title}
@@ -108,24 +104,20 @@ export const AddForm = ({ entries, onStatus }: Props) => {
 					/>
 				</Field>
 				<Field label="Applies to">
-					<select
+					<Select
 						id="add-kind"
-						class={controls.select}
 						value={kind}
 						onChange={(event) => changeKind(event.currentTarget.value as Kind)}
 					>
 						<option value="exact">This exact URL</option>
 						<option value="prefix">All pages under</option>
-					</select>
+					</Select>
 				</Field>
 				<Field label={kind === 'prefix' ? 'URL prefix' : 'URL'}>
-					<input
+					<TextInput
 						id="add-pattern"
-						class={cx(controls.input, controls.code)}
+						variant="code"
 						ref={patternInput}
-						type="text"
-						autocomplete="off"
-						spellcheck={false}
 						placeholder={PLACEHOLDERS[kind]}
 						required
 						value={pattern}

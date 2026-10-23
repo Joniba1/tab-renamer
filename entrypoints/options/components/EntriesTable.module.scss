@@ -1,4 +1,4 @@
-@use '../../../assets/chrome';
+@use '../../../assets/ui';
 
 .table {
 	width: 100%;
@@ -7,7 +7,7 @@
 	table-layout: fixed;
 
 	th {
-		@include chrome.field-label;
+		@include ui.field-label;
 		padding: 16px 8px 8px;
 		text-align: left;
 	}
@@ -46,7 +46,7 @@
 }
 
 .url {
-	font-family: chrome.$font-mono;
+	font-family: ui.$font-mono;
 	font-size: 12px;
 	word-break: break-all;
 
@@ -66,7 +66,7 @@
 	border: 1px solid var(--button-border);
 	border-radius: 100px;
 	color: var(--accent);
-	font-family: chrome.$font-sans;
+	font-family: ui.$font-sans;
 	font-size: 11px;
 	font-weight: 500;
 	line-height: 18px;

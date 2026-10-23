@@ -1,0 +1,5 @@
+@use '../assets/ui';
+
+.select {
+	@include ui.select;
+}

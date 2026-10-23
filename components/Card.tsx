@@ -8,7 +8,7 @@ interface Props {
 	children: ComponentChildren
 }
 
-/** A titled section, styled like a card on chrome://extensions. */
+/** A titled section on a raised surface, with optional header actions. */
 export const Card = ({ title, actions, children }: Props) => {
 	return (
 		<section class={styles.card}>

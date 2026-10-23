@@ -1,0 +1,16 @@
+@use '../assets/ui';
+
+.button {
+	@include ui.button;
+}
+
+// After .button, so its colors win.
+.action {
+	@include ui.action-button;
+}
+
+.small {
+	height: 32px;
+	padding: 0 14px;
+	font-size: 12px;
+}

@@ -1,0 +1,12 @@
+@use '../assets/ui';
+
+.input {
+	@include ui.filled-input;
+	width: 100%;
+}
+
+// After .input, so the monospace font wins.
+.code {
+	font-family: ui.$font-mono;
+	font-size: 12px;
+}

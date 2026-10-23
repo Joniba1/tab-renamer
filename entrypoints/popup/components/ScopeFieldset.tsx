@@ -2,7 +2,7 @@ import { normalizeUrl } from '../../../lib/core'
 import type { Scope } from '../types'
 import styles from './ScopeFieldset.module.scss'
 import { ScopeOption } from './ScopeOption'
-import { TextInput } from './TextInput'
+import { TextInput } from '../../../components/TextInput'
 
 interface Props {
 	url: string
