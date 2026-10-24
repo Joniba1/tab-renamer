@@ -3,6 +3,7 @@
 	"description": "Persistently rename browser tabs by exact URL or URL prefix.",
 	"private": true,
 	"version": "0.1.0",
+	"license": "MIT",
 	"type": "module",
 	"scripts": {
 		"dev": "wxt",
