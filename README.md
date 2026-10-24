@@ -21,14 +21,12 @@ Chrome 127 or newer is required.
 
 ## Usage
 
-There are three ways to rename a tab. Chrome doesn't let extensions add items to the tab strip's own
-right-click menu, so none of them live there.
+There are two ways to rename a tab:
 
 | Entry point | How |
 |---|---|
 | Toolbar popup | Click the extension icon. Edit the title and press **Enter** to save, or click **Reset to original**. |
 | Keyboard | `Ctrl+Shift+E` (**Rename the current tab**) opens the popup with the title selected: type the new name and press **Enter** to save, or **Esc** to cancel. **Reset tab title** has no default key; you can assign one. Change both at `chrome://extensions/shortcuts`. |
-| Page context menu | Right-click the page and choose **Rename this tab…** or **Reset tab title**. |
 
 Saving an empty title resets the tab. **Options → Manage all renames** lists every rename. From there
 you can **add a rename** without visiting the page (an exact URL, or a prefix pattern such as
@@ -75,7 +73,7 @@ script computes every candidate key itself (`t:<exact url>`, `p:github.com/a/b`,
 | [`lib/storage.ts`](lib/storage.ts) | `chrome.storage.local` CRUD and import/export. One key per rename: `"t:<url>" → { url, title, updatedAt }` for exact renames, `"p:<host/path>" → { prefix, title, updatedAt }` for prefix rules. |
 | [`entrypoints/title-guard.content.ts`](entrypoints/title-guard.content.ts) | ISOLATED world, `document_start`. Issues the storage lookup first, then takes ownership of the title (details below). |
 | [`entrypoints/title-main.content.ts`](entrypoints/title-main.content.ts) | MAIN world, `document_start`. Wraps the `document.title` setter. While locked, page writes are dropped and the last one is remembered, then replayed on reset so the page's current native title comes back. |
-| [`entrypoints/background.ts`](entrypoints/background.ts) | Context menus, the reset shortcut, SPA URL-change fallback, and injecting into tabs that were open before install or update. |
+| [`entrypoints/background.ts`](entrypoints/background.ts) | The keyboard shortcuts, SPA URL-change fallback, and injecting into tabs that were open before install or update. |
 | [`entrypoints/popup`](entrypoints/popup), [`entrypoints/options`](entrypoints/options) | The UI, as Preact components: `Popup.tsx`, and the manage page's `App.tsx`, `AddForm.tsx` and `EntriesTable.tsx`. |
 
 How `title-guard.content.ts` owns the title:
@@ -94,7 +92,7 @@ Chrome doesn't run extension scripts on:
 - `file://` pages, unless file access is enabled.
 
 On those pages the popup, whether opened by click or by the rename shortcut, explains why renaming
-isn't available. The context menu doesn't appear, and the reset shortcut does nothing. Before saving, the popup checks that the page is reachable, so it never stores
+isn't available, and the reset shortcut does nothing. Before saving, the popup checks that the page is reachable, so it never stores
 a rename that couldn't be shown (for example, Chrome's PDF viewer).
 
 ## Development
@@ -144,8 +142,7 @@ Things that must not be forgotten when publishing:
 - [ ] **Single purpose** statement, for example "Lets users give browser tabs custom, persistent titles".
 - [ ] **Permission justifications**, entered in the dashboard:
   - `storage`: saves the user's custom titles locally.
-  - `contextMenus`: the "Rename this tab…" and "Reset tab title" page menu items.
-  - `scripting`: injects the title script into tabs that were open before install or update, and runs the prompt fallback.
+  - `scripting`: injects the title script into tabs that were open before install or update.
   - **Host permission `<all_urls>`**: this triggers the *"Read and change all your data on all
     websites"* warning and an **in-depth review**, which is slower. The justification: the title must
     be applied at `document_start` on any page the user chooses, before the site's own title shows.

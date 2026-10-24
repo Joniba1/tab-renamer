@@ -8,7 +8,7 @@ export default defineConfig({
 		name: 'Tab Renamer',
 		description: 'Persistently rename browser tabs by exact URL or URL prefix.',
 		minimum_chrome_version: '127',
-		permissions: ['storage', 'contextMenus', 'scripting'],
+		permissions: ['storage', 'scripting'],
 		host_permissions: ['<all_urls>'],
 
 		commands: {
