@@ -1,0 +1,80 @@
+# Builds the extension and publishes it to the Chrome Web Store.
+
+name: Build & Publish
+
+on:
+    release:
+        types: [published]
+
+concurrency:
+    group: publish-extension
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            id-token: write
+        env:
+            TAG: ${{ github.event.release.tag_name }}
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - run: npm ci
+
+            - run: npm run typecheck
+
+            - name: Set the version
+              run: |
+                  version=${TAG#v}
+                  # Chrome needs plain numbers: WXT would turn 1.2.0-beta.1 into 1.2.0.
+                  if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    echo "::error::Tag '$TAG' isn't a valid version. (e.g. v1.2.3.)"
+                    exit 1
+                  fi
+                  npm version "$version" --no-git-tag-version --allow-same-version
+
+            - name: Build and zip
+              id: zip
+              run: |
+                  npm run zip
+                  echo "path=$(ls .output/*-chrome.zip)" >> "$GITHUB_OUTPUT"
+
+            - name: Attach the zip to the release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  ZIP: ${{ steps.zip.outputs.path }}
+              run: gh release upload "$TAG" "$ZIP" --clobber
+
+            - name: Sign in to Google
+              id: google
+              uses: google-github-actions/auth@v3
+              with:
+                  workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+                  service_account: ${{ vars.CWS_SERVICE_ACCOUNT }}
+                  token_format: access_token
+                  access_token_scopes: https://www.googleapis.com/auth/chromewebstore
+                  access_token_lifetime: 600s
+                  create_credentials_file: false
+
+            - name: Publish to the Chrome Web Store
+              run: npx wxt submit --chrome-zip "$ZIP"
+              env:
+                  ZIP: ${{ steps.zip.outputs.path }}
+                  CHROME_API_VERSION: v2
+                  CHROME_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+                  CHROME_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID }}
+                  CHROME_SERVICE_ACCOUNT_ACCESS_TOKEN: ${{ steps.google.outputs.access_token }}
+                  # A pre-release waits for you to click Publish in the dashboard after approval.
+                  CHROME_PUBLISH_TYPE: ${{ github.event.release.prerelease && 'STAGED_PUBLISH' || 'DEFAULT_PUBLISH' }}
+                  # A new release replaces a version that is still waiting in review.
+                  CHROME_CANCEL_PENDING: true
