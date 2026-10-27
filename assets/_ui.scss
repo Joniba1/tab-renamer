@@ -19,9 +19,9 @@ $light: (
 	fill: #e1e3e1,
 	outline: #c7c7c7,
 	icon: #1f1f1f,
-	accent: #0b57d0,
-	button-border: #a8c7fa,
-	action-bg: #0b57d0,
+	accent: #4f46e5,
+	button-border: #8b84f3,
+	action-bg: #4f46e5,
 	action-fg: #ffffff,
 	error: #b3261e,
 	select-arrow: select-arrow('444746'),
@@ -38,10 +38,10 @@ $dark: (
 	fill: #444746,
 	outline: #757575,
 	icon: #9aa0a6,
-	accent: #a8c7fa,
-	button-border: #047db7,
-	action-bg: #a8c7fa,
-	action-fg: #062e6f,
+	accent: #a29bfa,
+	button-border: #6b63f0,
+	action-bg: #5b52ea,
+	action-fg: #ffffff,
 	error: #f2b8b5,
 	select-arrow: select-arrow('c4c7c5'),
 );
@@ -59,6 +59,13 @@ $dark: (
 
 	@media (prefers-color-scheme: dark) {
 		@include custom-properties($dark);
+	}
+}
+
+/// Selected text in the accent color instead of the system highlight. Include at the top level.
+@mixin selection {
+	::selection {
+		background: color-mix(in srgb, var(--accent) 30%, transparent);
 	}
 }
 

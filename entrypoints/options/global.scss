@@ -5,6 +5,8 @@
 	@include ui.colors;
 }
 
+@include ui.selection;
+
 body {
 	// On body, not :root: Chrome injects `body { font-size: 75% }` into extension pages.
 	font: 13px/20px ui.$font-sans;
