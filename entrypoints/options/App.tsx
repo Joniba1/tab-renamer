@@ -57,7 +57,7 @@ export const App = () => {
 					{status}
 				</p>
 
-				{visible.length > 0 && <EntriesTable entries={visible} />}
+				{visible.length > 0 && <EntriesTable entries={visible} all={all} onStatus={setStatus} />}
 				{entries != null && visible.length === 0 && (
 					<p id="empty" class={styles.empty}>
 						{all.length === 0 ? 'No renamed tabs yet.' : 'No matches.'}

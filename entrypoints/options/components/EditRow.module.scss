@@ -1,0 +1,32 @@
+// Shaded, so the row being edited stands out from the list.
+.row td {
+	background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+// Title (full width)
+// Kind | Address
+// Error, then Cancel / Save on the right
+.form {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr);
+	gap: 8px 12px;
+	padding: 4px 0;
+}
+
+.title,
+.error,
+.buttons {
+	grid-column: 1 / -1;
+}
+
+.error {
+	margin: 0;
+	color: var(--error);
+	font-size: 12px;
+}
+
+.buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
