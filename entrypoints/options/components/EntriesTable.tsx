@@ -1,28 +1,30 @@
-import { useState } from 'preact/hooks'
 import { removeKey, type Entry } from '../../../lib/storage'
 import styles from './EntriesTable.module.scss'
 import { IconButton } from '../../../components/IconButton'
-import { EditRow } from './EditRow'
+import { RuleRow } from './RuleRow'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
-interface Props {
-	/** The renames to show (possibly filtered by the search). */
-	entries: Entry[]
-	/** Every rename, so an edit can't take an address another rename already has. */
-	all: Entry[]
-	onStatus: (message: string) => void
+/** An address as people read it: `%D7%93…` back to `ד…`. Display only; stored addresses stay encoded. */
+export const readable = (address: string): string => {
+	try {
+		return decodeURI(address)
+	} catch {
+		return address // malformed escapes
+	}
 }
 
-export const EntriesTable = ({ entries, all, onStatus }: Props) => {
-	// One row is edited at a time.
-	const [editing, setEditing] = useState<string | null>(null)
+export const NEW_RULE = 'new'
 
-	const finishEditing = (message?: string): void => {
-		setEditing(null)
-		if (message != null) onStatus(message)
-	}
+interface Props {
+	entries: Entry[]
+	all: Entry[]
+	editing: string | null
+	onEdit: (key: string) => void
+	onDone: (message?: string) => void
+}
 
+export const EntriesTable = ({ entries, all, editing, onEdit, onDone }: Props) => {
 	return (
 		<table class={styles.table}>
 			<colgroup>
@@ -42,23 +44,22 @@ export const EntriesTable = ({ entries, all, onStatus }: Props) => {
 				</tr>
 			</thead>
 			<tbody id="rows">
+				{editing === NEW_RULE && <RuleRow key={NEW_RULE} all={all} onDone={onDone} />}
 				{entries.map((entry) =>
 					entry.key === editing ? (
-						<EditRow key={entry.key} entry={entry} all={all} onDone={finishEditing} />
+						<RuleRow key={entry.key} entry={entry} all={all} onDone={onDone} />
 					) : (
 						<tr key={entry.key}>
 							<td class={styles.title}>{entry.title}</td>
-							<td class={styles.url}>
+							<td class={styles.url} title={readable(entry.pattern)}>
 								{entry.kind === 'exact' ? (
 									<a href={entry.pattern} target="_blank" rel="noreferrer">
-										{entry.pattern}
+										{readable(entry.pattern)}
 									</a>
 								) : (
 									<>
-										<span class={styles.badge} title="Applies to every page under this path">
-											prefix
-										</span>
-										{` ${entry.pattern}`}
+										<span class={styles.badge}>prefix</span>
+										{` ${readable(entry.pattern)}`}
 									</>
 								)}
 							</td>
@@ -68,7 +69,7 @@ export const EntriesTable = ({ entries, all, onStatus }: Props) => {
 									<IconButton
 										icon="edit"
 										label={`Edit ${entry.title}`}
-										onClick={() => setEditing(entry.key)}
+										onClick={() => onEdit(entry.key)}
 									/>
 									<IconButton
 										icon="close"

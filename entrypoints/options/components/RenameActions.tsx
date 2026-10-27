@@ -1,15 +1,13 @@
-import { clearRenames } from '../../../lib/storage'
-import { downloadExport, importFile } from '../services/backup'
 import { Button } from '../../../components/Button'
 import { FileButton } from '../../../components/FileButton'
+import { clearRenames } from '../../../lib/storage'
+import { downloadExport, importFile } from '../services/backup'
 
 interface Props {
-	/** How many renames exist, for the clear-all confirmation. */
 	count: number
 	onStatus: (message: string) => void
 }
 
-/** Import, export and clear-all, for the header of the renames card. */
 export const RenameActions = ({ count, onStatus }: Props) => {
 	const importBackup = async (file: File): Promise<void> => {
 		try {
@@ -29,13 +27,26 @@ export const RenameActions = ({ count, onStatus }: Props) => {
 
 	return (
 		<>
-			<FileButton id="import" accept="application/json,.json" onFile={(file) => void importBackup(file)}>
+			<FileButton
+				id="import"
+				variant="text"
+				size="small"
+				accept="application/json,.json"
+				onFile={(file) => void importBackup(file)}
+			>
 				Import
 			</FileButton>
-			<Button type="button" id="export" onClick={() => void downloadExport()}>
+			<Button type="button" id="export" variant="text" size="small" onClick={() => void downloadExport()}>
 				Export
 			</Button>
-			<Button type="button" id="clear" disabled={count === 0} onClick={() => void clearAll()}>
+			<Button
+				type="button"
+				id="clear"
+				variant="text"
+				size="small"
+				disabled={count === 0}
+				onClick={() => void clearAll()}
+			>
 				Clear all
 			</Button>
 		</>

@@ -9,11 +9,9 @@ const ICONS = {
 
 type Props = Omit<ComponentProps<'button'>, 'class' | 'children' | 'type'> & {
 	icon: keyof typeof ICONS
-	/** What the button does; read by screen readers and shown as a tooltip. */
 	label: string
 }
 
-/** A round icon-only button. */
 export const IconButton = ({ icon, label, ...props }: Props) => {
 	return (
 		<button type="button" {...props} class={styles.button} aria-label={label} title={label}>

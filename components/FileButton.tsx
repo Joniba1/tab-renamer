@@ -1,9 +1,11 @@
 import type { ComponentChildren } from 'preact'
 import { useRef } from 'preact/hooks'
-import { Button } from './Button'
+import { Button, type Variant } from './Button'
 
 interface Props {
 	id?: string
+	variant?: Variant
+	size?: 'default' | 'small'
 	/** File types the picker offers, as in `<input accept>`. */
 	accept: string
 	onFile: (file: File) => void
@@ -11,12 +13,12 @@ interface Props {
 }
 
 /** A button that opens a file picker and reports the chosen file. */
-export const FileButton = ({ id, accept, onFile, children }: Props) => {
+export const FileButton = ({ id, variant, size, accept, onFile, children }: Props) => {
 	const input = useRef<HTMLInputElement>(null)
 
 	return (
 		<>
-			<Button type="button" id={id} onClick={() => input.current?.click()}>
+			<Button type="button" id={id} variant={variant} size={size} onClick={() => input.current?.click()}>
 				{children}
 			</Button>
 			<input

@@ -2,10 +2,10 @@ import type { ComponentProps } from 'preact'
 import { cx } from '../lib/cx'
 import styles from './Button.module.scss'
 
-type Variant = 'outlined' | 'action'
+export type Variant = 'outlined' | 'action' | 'text'
 
 type Props = Omit<ComponentProps<'button'>, 'class'> & {
-	/** `action`: filled, for the main action of a section. */
+	/** `action`: filled, for the main action of a section. `text`: borderless, for secondary actions. */
 	variant?: Variant
 	/** `small`: shorter and tighter, for compact surfaces such as the popup. */
 	size?: 'default' | 'small'
@@ -13,7 +13,7 @@ type Props = Omit<ComponentProps<'button'>, 'class'> & {
 	class?: string
 }
 
-/** A pill button, outlined or filled. */
+/** A pill button: outlined, filled, or borderless text. */
 export const Button = ({ variant = 'outlined', size = 'default', class: className, ...props }: Props) => {
 	return (
 		<button
@@ -21,6 +21,7 @@ export const Button = ({ variant = 'outlined', size = 'default', class: classNam
 			class={cx(
 				styles.button,
 				variant === 'action' && styles.action,
+				variant === 'text' && styles.text,
 				size === 'small' && styles.small,
 				className
 			)}
