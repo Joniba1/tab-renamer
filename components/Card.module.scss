@@ -5,13 +5,15 @@
 	padding-bottom: 8px;
 }
 
+// Wraps when narrow: the actions move below the title instead of overflowing the card.
 .header {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 	box-sizing: border-box;
 	min-height: 53px;
-	padding: 0 20px;
+	padding: 8px 20px;
 	border-bottom: 1px solid var(--separator);
 }
 
@@ -24,6 +26,8 @@
 
 .actions {
 	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
 	gap: 8px;
 	margin-left: auto;
 }

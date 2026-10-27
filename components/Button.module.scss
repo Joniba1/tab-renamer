@@ -9,6 +9,12 @@
 	@include ui.action-button;
 }
 
+// After .button, so no border shows, even when disabled.
+.text,
+.text:disabled {
+	border-color: transparent;
+}
+
 .small {
 	height: 32px;
 	padding: 0 14px;

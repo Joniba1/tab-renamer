@@ -1,11 +1,7 @@
-// Shaded, so the row being edited stands out from the list.
 .row td {
 	background: color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
-// Title (full width)
-// Kind | Address
-// Error, then Cancel / Save on the right
 .form {
 	display: grid;
 	grid-template-columns: 180px minmax(0, 1fr);

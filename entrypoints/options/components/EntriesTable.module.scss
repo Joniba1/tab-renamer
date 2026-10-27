@@ -3,7 +3,6 @@
 .table {
 	width: 100%;
 	border-collapse: collapse;
-	// Fixed layout, so long URLs wrap instead of widening the card.
 	table-layout: fixed;
 
 	th {
@@ -13,7 +12,7 @@
 	}
 
 	td {
-		padding: 8px;
+		padding: 14px 8px;
 		border-top: 1px solid var(--separator);
 		vertical-align: middle;
 	}
@@ -46,10 +45,13 @@
 	overflow-wrap: anywhere;
 }
 
+// One line, cut with "…"; the full address is in the cell's tooltip.
 .url {
 	font-family: ui.$font-mono;
 	font-size: 12px;
-	word-break: break-all;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 
 	a {
 		color: var(--accent);

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
-import { MAX_TITLE_LENGTH } from '../../../lib/core'
 import { Button } from '../../../components/Button'
 import { Select } from '../../../components/Select'
 import { TextInput } from '../../../components/TextInput'
+import { MAX_TITLE_LENGTH } from '../../../lib/core'
 import type { Entry } from '../../../lib/storage'
 import {
 	KIND_LABELS,
@@ -13,19 +13,21 @@ import {
 	type Kind,
 	type RuleDraft,
 } from '../services/rules'
-import styles from './EditRow.module.scss'
+import styles from './RuleRow.module.scss'
+
+const EMPTY_DRAFT: RuleDraft = { title: '', kind: 'exact', pattern: '' }
 
 interface Props {
-	entry: Entry
-	/** Every rename, to refuse an address that another rename already has. */
+	entry?: Entry
 	all: Entry[]
-	/** Ends editing; `message` is set after a save. */
 	onDone: (message?: string) => void
 }
 
-/** A table row that edits one rename in place. Enter saves, Escape cancels. */
-export const EditRow = ({ entry, all, onDone }: Props) => {
-	const [draft, setDraft] = useState<RuleDraft>({ title: entry.title, kind: entry.kind, pattern: entry.pattern })
+/** A table row that adds a rename, or edits one in place. Enter saves, Escape cancels. */
+export const RuleRow = ({ entry, all, onDone }: Props) => {
+	const [draft, setDraft] = useState<RuleDraft>(
+		entry == null ? EMPTY_DRAFT : { title: entry.title, kind: entry.kind, pattern: entry.pattern }
+	)
 	const [error, setError] = useState<string | null>(null)
 	const titleInput = useRef<HTMLInputElement>(null)
 	const patternInput = useRef<HTMLInputElement>(null)
@@ -37,6 +39,12 @@ export const EditRow = ({ entry, all, onDone }: Props) => {
 	const update = (changes: Partial<RuleDraft>): void => {
 		setDraft({ ...draft, ...changes })
 		setError(null)
+	}
+
+	const changePattern = (pattern: string): void => {
+		// A trailing `*` is a clear sign a prefix rule is meant.
+		const kind = pattern.trim().endsWith('*') ? 'prefix' : draft.kind
+		update({ pattern, kind })
 	}
 
 	const fail = (message: string, field: 'title' | 'pattern'): void => {
@@ -51,11 +59,16 @@ export const EditRow = ({ entry, all, onDone }: Props) => {
 		if (!result.ok) return fail(result.error, result.field)
 
 		const { rule } = result
-		if (rule.key !== entry.key && all.some((e) => e.key === rule.key)) {
+		if (rule.key !== entry?.key && all.some((e) => e.key === rule.key)) {
 			return fail('Another rename already applies to this address.', 'pattern')
 		}
-		await replaceRule(entry.key, rule)
-		onDone(`Updated rename for ${rule.label}`)
+		if (entry == null) {
+			await rule.save()
+			onDone(`Added rename for ${rule.label}`)
+		} else {
+			await replaceRule(entry.key, rule)
+			onDone(`Updated rename for ${rule.label}`)
+		}
 	}
 
 	const cancelOnEscape = (event: KeyboardEvent): void => {
@@ -70,6 +83,7 @@ export const EditRow = ({ entry, all, onDone }: Props) => {
 						ref={titleInput}
 						class={styles.title}
 						aria-label="Custom title"
+						placeholder="Custom title"
 						maxLength={MAX_TITLE_LENGTH}
 						value={draft.title}
 						onInput={(event) => update({ title: event.currentTarget.value })}
@@ -91,7 +105,7 @@ export const EditRow = ({ entry, all, onDone }: Props) => {
 						aria-label={draft.kind === 'prefix' ? 'URL prefix' : 'URL'}
 						placeholder={PLACEHOLDERS[draft.kind]}
 						value={draft.pattern}
-						onInput={(event) => update({ pattern: event.currentTarget.value })}
+						onInput={(event) => changePattern(event.currentTarget.value)}
 					/>
 					{error != null && (
 						<p class={styles.error} role="alert">
@@ -103,7 +117,7 @@ export const EditRow = ({ entry, all, onDone }: Props) => {
 							Cancel
 						</Button>
 						<Button type="submit" variant="action" size="small">
-							Save
+							{entry == null ? 'Add' : 'Save'}
 						</Button>
 					</div>
 				</form>
