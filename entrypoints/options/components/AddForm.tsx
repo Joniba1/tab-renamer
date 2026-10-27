@@ -1,28 +1,12 @@
-import type { RefObject } from 'preact'
 import { useRef, useState } from 'preact/hooks'
-import {
-	KEY_PREFIX,
-	MAX_TITLE_LENGTH,
-	PREFIX_RULE_KEY,
-	formatPrefix,
-	isRestrictedUrl,
-	normalizePrefix,
-	parseExactUrl,
-	sanitizeTitle,
-} from '../../../lib/core'
+import { MAX_TITLE_LENGTH } from '../../../lib/core'
 import { Button } from '../../../components/Button'
 import { Field } from '../../../components/Field'
 import { Select } from '../../../components/Select'
 import { TextInput } from '../../../components/TextInput'
-import { setMapping, setPrefixRule, type Entry } from '../../../lib/storage'
+import type { Entry } from '../../../lib/storage'
+import { KIND_LABELS, PLACEHOLDERS, parseRule, type Kind } from '../services/rules'
 import styles from './AddForm.module.scss'
-
-type Kind = 'exact' | 'prefix'
-
-const PLACEHOLDERS: Record<Kind, string> = {
-	exact: 'https://example.com/page?id=1',
-	prefix: 'github.com/user/repo/*',
-}
 
 interface Props {
 	/** Current renames, to tell "Added" from "Updated". */
@@ -49,40 +33,22 @@ export const AddForm = ({ entries, onStatus }: Props) => {
 		if (value.trim().endsWith('*') && kind !== 'prefix') changeKind('prefix')
 	}
 
-	const fail = (message: string, field: RefObject<HTMLInputElement | null>): void => {
-		setError(message)
-		field.current?.focus()
-	}
-
 	const submit = async (event: Event): Promise<void> => {
 		event.preventDefault()
 		setError(null)
 
-		if (sanitizeTitle(title) == null) return fail('Enter a title.', titleInput)
-
-		let key: string
-		let label: string
-		let save: () => Promise<unknown>
-		if (kind === 'prefix') {
-			const prefix = normalizePrefix(pattern)
-			if (prefix == null) return fail('Enter a pattern like github.com/user/repo/*', patternInput)
-			key = PREFIX_RULE_KEY + prefix
-			label = formatPrefix(prefix)
-			save = () => setPrefixRule(prefix, title)
-		} else {
-			const url = parseExactUrl(pattern)
-			if (url == null) return fail('Enter an http(s) or file:// URL.', patternInput)
-			if (isRestrictedUrl(url)) {
-				return fail("Chrome doesn't allow extensions to rename Chrome Web Store pages.", patternInput)
-			}
-			key = KEY_PREFIX + url
-			label = url
-			save = () => setMapping(url, title)
+		const result = parseRule({ title, kind, pattern })
+		if (!result.ok) {
+			setError(result.error)
+			const field = result.field === 'title' ? titleInput : patternInput
+			field.current?.focus()
+			return
 		}
 
-		const existed = entries.some((e) => e.key === key)
-		await save()
-		onStatus(`${existed ? 'Updated' : 'Added'} rename for ${label}`)
+		const { rule } = result
+		const existed = entries.some((e) => e.key === rule.key)
+		await rule.save()
+		onStatus(`${existed ? 'Updated' : 'Added'} rename for ${rule.label}`)
 		setTitle('')
 		setKind('exact')
 		setPattern('')
@@ -109,8 +75,8 @@ export const AddForm = ({ entries, onStatus }: Props) => {
 						value={kind}
 						onChange={(event) => changeKind(event.currentTarget.value as Kind)}
 					>
-						<option value="exact">This exact URL</option>
-						<option value="prefix">All pages under</option>
+						<option value="exact">{KIND_LABELS.exact}</option>
+						<option value="prefix">{KIND_LABELS.prefix}</option>
 					</Select>
 				</Field>
 				<Field label={kind === 'prefix' ? 'URL prefix' : 'URL'}>

@@ -37,8 +37,9 @@
 	width: 156px;
 }
 
+// Two 32px icon buttons.
 .actionCol {
-	width: 52px;
+	width: 88px;
 }
 
 .title {
@@ -78,8 +79,10 @@
 	white-space: nowrap;
 }
 
-.action {
-	text-align: right;
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 4px;
 }
 
 .visuallyHidden {
